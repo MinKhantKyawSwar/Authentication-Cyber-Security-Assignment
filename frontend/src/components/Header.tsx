@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FiSun, FiMoon } from 'react-icons/fi';
-import { useTheme } from './ThemeProvider';
-import { GamingButton } from './ui/gaming-button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Icon } from '@iconify/react';
-import Sidebar from './Sidebar';
-import { useDispatch } from 'react-redux';
-import { logout } from '@/features/auth/authSlice';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FiSun, FiMoon } from "react-icons/fi";
+import { useTheme } from "./ThemeProvider";
+import { GamingButton } from "./ui/gaming-button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Icon } from "@iconify/react";
+import Sidebar from "./Sidebar";
+import { useDispatch } from "react-redux";
+import { logout } from "@/features/auth/authSlice";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,21 +16,25 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
-import { useGetCurrentUserQuery } from '@/features/auth/authApi';
-import toast from 'react-hot-toast';
+} from "@/components/ui/dropdown-menu";
+import { useGetCurrentUserQuery } from "@/features/auth/authApi";
+import toast from "react-hot-toast";
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const skipUser = location.pathname.startsWith('/otp');
-  const { data: user, isLoading, isError } = useGetCurrentUserQuery(undefined, { skip: skipUser });
+  const skipUser = location.pathname.startsWith("/otp");
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useGetCurrentUserQuery(undefined, { skip: skipUser });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!skipUser && isError) toast.error('Failed to fetch user!');
-  }, [isError, skipUser]);
+  // useEffect(() => {
+  //   if (!skipUser && isError) toast.error('Failed to fetch user!');
+  // }, [isError, skipUser]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -54,7 +58,9 @@ const Header: React.FC = () => {
               <div className="w-8 h-8 bg-gradient-gaming rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">A</span>
               </div>
-              <span className="text-lg sm:text-xl font-bold gradient-text">Authentic</span>
+              <span className="text-lg sm:text-xl font-bold gradient-text">
+                Authentic
+              </span>
             </Link>
           </div>
 
@@ -65,9 +71,9 @@ const Header: React.FC = () => {
               <GamingButton
                 variant="ghost"
                 size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
-                {theme === 'dark' ? (
+                {theme === "dark" ? (
                   <FiSun className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
                 ) : (
                   <FiMoon className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
@@ -123,7 +129,10 @@ const Header: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/login" className="text-white font-semibold hover:underline">
+              <Link
+                to="/login"
+                className="text-white font-semibold hover:underline"
+              >
                 Login
               </Link>
             )}
