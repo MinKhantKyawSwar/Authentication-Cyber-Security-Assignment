@@ -4,6 +4,7 @@ import argon2 from "argon2";
 import mongoose from "mongoose";
 import UserModel from "../models/User";
 import TokenService from "../services/TokenService";
+import RefreshTokenModel from "../models/RefreshToken";
 import { OAuth2Client } from "google-auth-library";
 import { mailSender } from "../utils/mail";
 import OtpModel from "../models/Otp";
@@ -343,10 +344,16 @@ export default class AuthController {
         user = await UserModel.findOne({ email: email.toLowerCase() });
         if (!user) return res.status(401).json({ message: "Invalid OTP" });
         // Always validate against the latest OTP for this user
-        otp = await OtpModel.findOne({ userId: user._id, consumed: false }).sort({ createdAt: -1 });
-        if (!otp || otp.code !== code) return res.status(401).json({ message: "Invalid OTP" });
+        otp = await OtpModel.findOne({
+          userId: user._id,
+          consumed: false,
+        }).sort({ createdAt: -1 });
+        if (!otp || otp.code !== code)
+          return res.status(401).json({ message: "Invalid OTP" });
       } else {
-        otp = await OtpModel.findOne({ code, consumed: false }).sort({ createdAt: -1 });
+        otp = await OtpModel.findOne({ code, consumed: false }).sort({
+          createdAt: -1,
+        });
         if (!otp) return res.status(401).json({ message: "Invalid OTP" });
         user = await UserModel.findById(otp.userId);
         if (!user) return res.status(401).json({ message: "Invalid OTP" });
@@ -366,12 +373,51 @@ export default class AuthController {
       await otp.save();
 
       const token = await this.tokenService.createAccessToken(user._id as any);
+      const refreshToken = await this.tokenService.createRefreshToken(
+        user._id as any
+      );
       return res.json({
         accessToken: token,
-        user: { id: user._id, name: user.name || user.email.split("@")[0], email: user.email },
+        refreshToken,
+        user: {
+          id: user._id,
+          name: user.name || user.email.split("@")[0],
+          email: user.email,
+        },
       });
     } catch (e) {
       return res.status(500).json({ message: "Failed to verify OTP" });
+    }
+  };
+
+  refresh = async (req: Request, res: Response) => {
+    try {
+      const { userId, refreshToken } = req.body as {
+        userId?: string;
+        refreshToken?: string;
+      };
+      if (!userId || !refreshToken) {
+        return res.status(400).json({ message: "Missing userId or refreshToken" });
+      }
+
+      // Validate refresh token record
+      const record = await this.tokenService.verifyRefreshToken(userId, refreshToken);
+
+      // Issue new access token
+      const accessToken = await this.tokenService.createAccessToken(record.userId as any);
+
+      // Rotate refresh token
+      const newRefresh = await this.tokenService.createRefreshToken(
+        record.userId as any
+      );
+
+      // Invalidate old one
+      record.isValid = true;
+      await record.save();
+
+      return res.json({ accessToken, refreshToken: newRefresh });
+    } catch (e: any) {
+      return res.status(401).json({ message: e?.message || "Refresh failed" });
     }
   };
 
@@ -415,5 +461,57 @@ export default class AuthController {
     } catch (e) {
       return res.status(500).json({ message: "Failed to resend OTP" });
     }
+  };
+
+  securityAudit  = async (req: Request, res: Response) => {
+    if (!req.user)
+      return res.status(401).json({ message: "User is unauthorized." });
+
+    const userId = req.user.id;
+    const records = await RefreshTokenModel.find({
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+      .sort({ updatedAt: -1 })
+      .limit(20);
+
+    const events = records
+      .flatMap((r) => {
+        const arr: Array<{
+          type: string;
+          at: Date;
+          meta?: Record<string, unknown>;
+        }> = [];
+        arr.push({
+          type: "Refresh token issued",
+          at: r.createdAt,
+          meta: { deviceInfo: r.deviceInfo, ip: r.ipAddress },
+        });
+        if (r.isValid) {
+          arr.push({
+            type: "Session is valid.",
+            at: r.updatedAt,
+            meta: { deviceInfo: r.deviceInfo, ip: r.ipAddress },
+          });
+        }
+        if (r.hashedTokenReplacement) {
+          arr.push({
+            type: "Token replaced",
+            at: r.updatedAt,
+            meta: { deviceInfo: r.deviceInfo, ip: r.ipAddress },
+          });
+        }
+        return arr;
+      })
+      .sort((a, b) => b.at.getTime() - a.at.getTime())
+      .slice(0, 20);
+
+    return res.json(
+      events.map((e) => ({
+        type: e.type,
+        at: e.at,
+        userAgent: e.meta?.userAgent as string | undefined,
+        ip: e.meta?.ip as string | undefined,
+      }))
+    );
   };
 }

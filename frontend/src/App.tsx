@@ -5,11 +5,14 @@ import { store } from './store/store';
 import { HomePage, LoginPage, RegisterPage, NotFound } from './pages';
 import OtpPage from './pages/OtpPage';
 import { GameToaster } from './components/animated-ui/GameToaster';
+// import AuthExpiryGuard from './components/AuthExpiryGuard';
+import AuthBootstrap from './components/AuthBootstrap';
 
 const App = () => (
   <Provider store={store}>
     <BrowserRouter>
-      <GameToaster />
+      {/* <AuthExpiryGuard /> */}
+      <AuthBootstrap />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { useTheme } from "./ThemeProvider";
 import { GamingButton } from "./ui/gaming-button";
@@ -7,8 +7,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Icon } from "@iconify/react";
 import Sidebar from "./Sidebar";
-import { useDispatch } from "react-redux";
-import { logout } from "@/features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectCurrentUser, selectCurrentToken } from "@/features/auth/authSlice";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,24 +17,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { useGetCurrentUserQuery } from "@/features/auth/authApi";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 const Header: React.FC = () => {
-  const location = useLocation();
-  const skipUser = location.pathname.startsWith("/otp");
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useGetCurrentUserQuery(undefined, { skip: skipUser });
+  const user = useSelector(selectCurrentUser);
+  const token = useSelector(selectCurrentToken);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   if (!skipUser && isError) toast.error('Failed to fetch user!');
-  // }, [isError, skipUser]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -92,19 +82,17 @@ const Header: React.FC = () => {
             </div>
 
             {/* User Profile Dropdown */}
-            {isLoading ? (
-              <p className="text-white text-sm">Loading...</p>
-            ) : user ? (
+            {user && token ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 focus:outline-none">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-gradient-gaming text-white">
-                        {user.name.slice(0, 2).toUpperCase()}
+                        {(user.name || user.email).slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium">{user.name}</p>
+                      <p className="text-sm font-medium">{user.name || user.email}</p>
                     </div>
                   </button>
                 </DropdownMenuTrigger>

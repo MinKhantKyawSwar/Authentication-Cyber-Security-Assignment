@@ -1,12 +1,13 @@
 import React from "react";
 import MainLayout from "../layouts/MainLayout";
-import { FloatingParticles, FloatingElements } from "@/components";
-
+import Home from "@/components/home/Home";
 const HomePage: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       <MainLayout>
-        <div className="h-screen">Hello World!</div>
+        <div className="h-screen">
+          <Home />
+        </div>
       </MainLayout>
     </div>
   );
