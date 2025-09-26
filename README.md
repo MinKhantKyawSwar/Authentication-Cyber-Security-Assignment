@@ -31,7 +31,7 @@ The backend handles authentication logic, token minting, database interaction, a
 Move into the backend directory and install the required Node.js packages.
 
 ```bash
-cd Authentication-Cyber-Security-Assignment/backend
+cd backend
 npm install
 ```
 
@@ -60,13 +60,9 @@ The frontend is the client application that interacts with the backend, storing 
 Move into the frontend directory and install the React application dependencies.
 
 ```bash
-cd ../frontend # Assuming you are currently in the backend/ directory
+cd ../frontend # Assuming you are currently in the backend/ directory, if not cd frontend
 npm install
 ```
-
-### Configure Frontend Environment Variables
-
-Create a file named `.env` in the `frontend/` directory to configure the base URL for the API (e.g., `VITE_API_URL=http://localhost:4000`).
 
 ### Start the Frontend Development Server
 
@@ -84,7 +80,7 @@ The system provides secure, scalable, token-based authentication by separating c
 
 ### Token Overview Diagram
 
-The diagram below illustrates the purpose, storage, lifespan, and usage of each token.
+The diagram below illustrates the purpose, storage, lifespan, and usage of each token. You can copy and check it in `https://mermaid.live`
 
 ```mermaid
 graph TD
