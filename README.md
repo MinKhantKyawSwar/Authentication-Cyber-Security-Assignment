@@ -25,6 +25,7 @@ Move into the backend directory and install the required Node.js packages.
 ````backend dependencies installations
 cd backend
 npm install
+```
 
 Configure Environment Variables
 Create a file named .env in the backend/ directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.).
@@ -33,9 +34,9 @@ Note: Replace the placeholder values with actual secure keys.
 
 Start the Backend Development Server
 Start the server, which will typically run on http://localhost:4000.
-
+```
 npm run dev
-
+```
 The server is now running and ready to handle API calls.
 
 3. Frontend Setup (React App)
@@ -43,18 +44,18 @@ The server is now running and ready to handle API calls.
 
 Navigate and Install Dependencies
 Move into the frontend directory and install the React application dependencies.
-
-``` cd ../frontend # Assuming you are currently in the backend/ directory, if not cd frontend
-``` npm install
-
+```
+cd ../frontend # Assuming you are currently in the backend/ directory, if not cd frontend
+npm install
+```
 Configure Frontend Environment Variables
 Create a file named .env in the frontend/ directory to configure the base URL for the API.
 
 Start the Frontend Development Server
 Start the React development server. It usually runs on http://localhost:5173 and opens automatically in your browser.
-
+```
 npm run dev
-
+```
 The React application is now running and communicating with the Express API.
 
 Authentication System Technical Overview
