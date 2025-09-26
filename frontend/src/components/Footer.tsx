@@ -5,13 +5,11 @@ import React from "react";
 const Footer: React.FC = () => {
   return (
     <>
-      <footer className="top-0 z-50 w-full glass">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b-[#B366FF] border-b-4">
+      <footer className="top-0 z-50 w-full border-black border-t-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
           <div className="ml-12 mt-10">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-lg sm:text-xl font-bold gradient-text">
-                Authentic
-              </span>
+              <span className="text-lg sm:text-xl font-bold">Authentic</span>
             </Link>
           </div>
           <div className="ml-5 mt-10 max-w-48">
@@ -23,12 +21,6 @@ const Footer: React.FC = () => {
               <li>
                 <Link to="/" className="hover:text-white">
                   Home
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/" className="hover:text-white">
-                  Profile
                 </Link>
               </li>
             </ul>

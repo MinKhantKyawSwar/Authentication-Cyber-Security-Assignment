@@ -30,7 +30,7 @@ const Home = () => {
   }, [events]);
 
   return (
-    <section className="min-h-screen text-white p-8 font-inter space-y-8 bg-gradient-to-b from-[#0b0b16] to-[#1a1625]">
+    <section className="min-h-screen text-white p-8 font-inter space-y-8 ">
       <AuthExpiryGuard />
       <div className="flex flex-col md:flex-row items-center justify-between">
         <div>
@@ -65,8 +65,23 @@ const Home = () => {
                   <span className="text-red-400">Expired</span>
                 ) : (
                   <span>
-                    Refresh in {countdown.days}d {countdown.hours}h
-                    {countdown.minutes}m {countdown.seconds}s
+                    Refresh in{" "}
+                    <span className="font-semibold text-white">
+                      {countdown.days}
+                    </span>{" "}
+                    d{" "}
+                    <span className="font-semibold text-white">
+                      {countdown.hours}{" "}
+                    </span>
+                    h{" "}
+                    <span className="font-semibold text-white">
+                      {countdown.minutes}
+                    </span>{" "}
+                    m{" "}
+                    <span className="font-semibold text-white">
+                      {countdown.seconds}
+                    </span>{" "}
+                    s
                   </span>
                 )}
               </p>

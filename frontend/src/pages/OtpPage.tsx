@@ -24,10 +24,9 @@ const OtpPage: React.FC = () => {
         setCredentials({
           user: res.user,
           token: res.accessToken,
-          refreshToken: res.refreshToken,
         }),
       );
-      localStorage.setItem('auth', JSON.stringify({ user: res.user, token: res.accessToken, refreshToken: res.refreshToken }));
+      localStorage.setItem('auth', JSON.stringify({ user: res.user, token: res.accessToken }));
       navigate('/');
     } catch (e) {
       // eslint-disable-next-line no-alert

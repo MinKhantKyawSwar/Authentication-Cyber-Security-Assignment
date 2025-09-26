@@ -376,9 +376,18 @@ export default class AuthController {
       const refreshToken = await this.tokenService.createRefreshToken(
         user._id as any
       );
+
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      res.cookie("rt", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/api/auth/refresh",
+        maxAge: thirtyDaysMs,
+      });
+
       return res.json({
         accessToken: token,
-        refreshToken,
         user: {
           id: user._id,
           name: user.name || user.email.split("@")[0],
@@ -392,32 +401,53 @@ export default class AuthController {
 
   refresh = async (req: Request, res: Response) => {
     try {
-      const { userId, refreshToken } = req.body as {
-        userId?: string;
-        refreshToken?: string;
-      };
-      if (!userId || !refreshToken) {
-        return res.status(400).json({ message: "Missing userId or refreshToken" });
+      const refreshToken = (req as any).cookies?.rt as string | undefined;
+      const userId = (req.body as any)?.userId as string | undefined;
+      if (!refreshToken || !userId) {
+        return res.status(400).json({ message: "Missing refresh token or userId" });
       }
 
-      // Validate refresh token record
       const record = await this.tokenService.verifyRefreshToken(userId, refreshToken);
 
-      // Issue new access token
       const accessToken = await this.tokenService.createAccessToken(record.userId as any);
 
-      // Rotate refresh token
-      const newRefresh = await this.tokenService.createRefreshToken(
-        record.userId as any
-      );
-
-      // Invalidate old one
+      // Rotate: revoke old and set new cookie
+      const newRefresh = await this.tokenService.createRefreshToken(record.userId as any);
       record.isValid = true;
       await record.save();
 
-      return res.json({ accessToken, refreshToken: newRefresh });
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      res.cookie("rt", newRefresh, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/api/auth/refresh",
+        maxAge: thirtyDaysMs,
+      });
+
+      return res.json({ accessToken });
     } catch (e: any) {
       return res.status(401).json({ message: e?.message || "Refresh failed" });
+    }
+  };
+
+  logout = async (req: Request, res: Response) => {
+    try {
+      const refreshToken = (req as any).cookies?.rt as string | undefined;
+      const userId = (req.body as any)?.userId as string | undefined;
+      if (refreshToken && userId) {
+        try {
+          const record = await this.tokenService.verifyRefreshToken(userId, refreshToken);
+          record.isValid = true;
+          await record.save();
+        } catch {
+          // ignore if already invalid
+        }
+      }
+      res.clearCookie("rt", { path: "/api/auth/refresh" });
+      return res.status(200).json({ message: "Logged out" });
+    } catch {
+      return res.status(200).json({ message: "Logged out" });
     }
   };
 

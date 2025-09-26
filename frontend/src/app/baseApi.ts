@@ -26,47 +26,36 @@ const baseQueryWithReauth: typeof rawBaseQuery = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (result.error && (result.error as any).status === 401) {
     const storedAuth = localStorage.getItem("auth");
-    if (storedAuth) {
-      const parsed = JSON.parse(storedAuth);
-      const user = parsed.user;
-      const refreshToken = parsed.refreshToken;
-      if (user?.id && refreshToken) {
-        const refreshResult = await rawBaseQuery(
-          {
-            url: "/auth/refresh",
-            method: "POST",
-            body: { userId: user.id, refreshToken },
-          },
-          api,
-          extraOptions,
-        );
-        if (refreshResult.data) {
-          const { accessToken, refreshToken: newRefresh } =
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            refreshResult.data as any;
-          const newAuth = {
-            ...parsed,
-            token: accessToken,
-            refreshToken: newRefresh,
-          };
-          localStorage.setItem("auth", JSON.stringify(newAuth));
-          // Sync Redux auth state
-          try {
-            // parsed.user should exist if we had a token
-            api.dispatch(
-              setCredentials({
-                user: parsed.user,
-                token: accessToken,
-                refreshToken: newRefresh,
-              })
-            );
-          } catch {
-            // no-op
-          }
-          result = await rawBaseQuery(args, api, extraOptions);
-        } else {
-          localStorage.removeItem("auth");
-        }
+    const parsed = storedAuth ? JSON.parse(storedAuth) : null;
+    const userId = parsed?.user?.id as string | undefined;
+    if (userId) {
+      const refreshResult = await rawBaseQuery(
+        {
+          url: "/auth/refresh",
+          method: "POST",
+          body: { userId },
+        },
+        api,
+        extraOptions,
+      );
+      if (refreshResult.data) {
+        const { accessToken } = refreshResult.data as any;
+        const newAuth = {
+          user: parsed.user,
+          token: accessToken,
+        };
+        localStorage.setItem("auth", JSON.stringify(newAuth));
+        try {
+          api.dispatch(
+            setCredentials({
+              user: parsed.user,
+              token: accessToken,
+            })
+          );
+        } catch {}
+        result = await rawBaseQuery(args, api, extraOptions);
+      } else {
+        localStorage.removeItem("auth");
       }
     }
   }

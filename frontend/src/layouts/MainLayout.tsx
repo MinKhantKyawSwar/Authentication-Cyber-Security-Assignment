@@ -1,8 +1,8 @@
-import React from 'react';
-import Header from '../components/Header';
-import Footer from '@/components/Footer';
-import { useAppSelector } from '../hooks/useAppSelector';
-import { LoginPage } from '@/pages';
+import React from "react";
+import Header from "../components/Header";
+import Footer from "@/components/Footer";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { LoginPage } from "@/pages";
 
 interface MainLayoutProps {
   children: React.ReactNode;

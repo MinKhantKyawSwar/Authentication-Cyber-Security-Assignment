@@ -38,7 +38,7 @@ export default class TokenService {
 
   async createAccessToken(
     userId: mongoose.Types.ObjectId,
-    expiresIn = 5 // 1 hour refresh
+    expiresIn = 900 // 15 minutes in seconds
   ) {
     const jti = randomUUID();
     const now = Math.floor(Date.now() / 1000);
@@ -153,7 +153,7 @@ export default class TokenService {
 
     await RefreshTokenModel.create({
       userId,
-      tokenHash: newHash,
+      hashedToken: newHash,
       expiresAt: newExpires,
     });
 

@@ -8,7 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Icon } from "@iconify/react";
 import Sidebar from "./Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectCurrentUser, selectCurrentToken } from "@/features/auth/authSlice";
+import {
+  logout,
+  selectCurrentUser,
+  selectCurrentToken,
+} from "@/features/auth/authSlice";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,7 +27,7 @@ const Header: React.FC = () => {
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -32,25 +36,13 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <header className="sticky top-0 z-50 w-full glass border-b-[#B366FF] border-b-4">
+      <header className="sticky top-0 z-50 w-full">
         <div className="px-4 h-16 flex items-center justify-between mx-5">
           {/* Left side */}
           <div className="flex justify-between items-center space-x-4 sm:space-x-10">
-            <Icon
-              icon="mingcute:menu-fill"
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              className="h-6 w-6 text-white cursor-pointer hover:scale-105 transition-transform duration-200"
-            />
-
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-gaming rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">A</span>
-              </div>
-              <span className="text-lg sm:text-xl font-bold gradient-text">
-                Authentic
-              </span>
+              <span className="text-lg sm:text-xl font-bold">Authentic</span>
             </Link>
           </div>
 
@@ -61,7 +53,17 @@ const Header: React.FC = () => {
               <GamingButton
                 variant="ghost"
                 size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={toggleTheme}
+                aria-label={
+                  theme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
+                title={
+                  theme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
               >
                 {theme === "dark" ? (
                   <FiSun className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
@@ -92,7 +94,9 @@ const Header: React.FC = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium">{user.name || user.email}</p>
+                      <p className="text-sm font-medium">
+                        {user.name || user.email}
+                      </p>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
@@ -101,12 +105,6 @@ const Header: React.FC = () => {
                     Signed in as {user.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex gap-2">
-                      <Icon icon="gg:profile" className="h-5 w-5 text-white" />
-                      <span>Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <div className="flex gap-2 text-red-500">

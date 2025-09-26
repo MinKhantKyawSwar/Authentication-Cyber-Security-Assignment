@@ -79,8 +79,6 @@ const LoginPage: React.FC = () => {
             user: (res as any).user,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             token: (res as any).accessToken,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            refreshToken: (res as any).refreshToken,
           }),
         );
         localStorage.setItem(
@@ -90,8 +88,6 @@ const LoginPage: React.FC = () => {
             user: (res as any).user,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             token: (res as any).accessToken,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            refreshToken: (res as any).refreshToken,
           }),
         );
         toast.success("Welcome back!");
@@ -119,19 +115,80 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      const client = google.accounts.oauth2.initCodeClient({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID as string,
-        scope: "openid email profile",
-        ux_mode: "popup",
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+      // Prefer ID token flow; fallback to code flow if it fails
+      const startCodeFlow = () => {
+        try {
+          const codeClient = google.accounts.oauth2.initCodeClient({
+            client_id: clientId,
+            scope: "openid email profile",
+            ux_mode: "popup",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            callback: async (resp: any) => {
+              const authCode = resp?.code;
+              if (!authCode) {
+                toast.error("No auth code received");
+                return;
+              }
+              try {
+                const res = await googleLogin({ authCode }).unwrap();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                if ((res as any).accessToken) {
+                  dispatch(
+                    setCredentials({
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      user: (res as any).user,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      token: (res as any).accessToken,
+                    }),
+                  );
+                  localStorage.setItem(
+                    "auth",
+                    JSON.stringify({
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      user: (res as any).user,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      token: (res as any).accessToken,
+                    }),
+                  );
+                  toast.success("Signed in with Google");
+                  navigate("/");
+                } else {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const emailParam = (res as any)?.pendingUser?.email || "";
+                  if (emailParam)
+                    sessionStorage.setItem("pendingEmail", emailParam);
+                  toast.success("OTP sent to your email");
+                  navigate(`/otp?email=${encodeURIComponent(emailParam)}`);
+                }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } catch (err: any) {
+                toast.error(
+                  err?.data?.message ||
+                    err?.data?.detail ||
+                    "Google code flow failed",
+                );
+              }
+            },
+          });
+          codeClient.requestCode();
+        } catch (err) {
+          toast.error("Google code flow failed to start");
+        }
+      };
+
+      let idFlowHandled = false;
+      google.accounts.id.initialize({
+        client_id: clientId,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: async (response: any) => {
-          const authCode = response?.code;
-          if (!authCode) {
-            toast.error("No auth code received");
+          const idToken = response?.credential as string | undefined;
+          if (!idToken) {
+            startCodeFlow();
             return;
           }
           try {
-            const res = await googleLogin({ authCode }).unwrap();
+            const res = await googleLogin({ idToken }).unwrap();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if ((res as any).accessToken) {
               dispatch(
@@ -140,8 +197,6 @@ const LoginPage: React.FC = () => {
                   user: (res as any).user,
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   token: (res as any).accessToken,
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  refreshToken: (res as any).refreshToken,
                 }),
               );
               localStorage.setItem(
@@ -151,8 +206,6 @@ const LoginPage: React.FC = () => {
                   user: (res as any).user,
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   token: (res as any).accessToken,
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  refreshToken: (res as any).refreshToken,
                 }),
               );
               toast.success("Signed in with Google");
@@ -165,15 +218,28 @@ const LoginPage: React.FC = () => {
               toast.success("OTP sent to your email");
               navigate(`/otp?email=${encodeURIComponent(emailParam)}`);
             }
+            idFlowHandled = true;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } catch (err: any) {
-            toast.error(err?.data?.message || "Google sign-in failed");
+            // If ID token verification fails (e.g., audience mismatch), fallback
+            toast.error(
+              err?.data?.message ||
+                err?.data?.detail ||
+                "Google ID flow failed",
+            );
+            startCodeFlow();
           }
         },
       });
-      client.requestCode();
+      // Trigger prompt; if the browser blocks it or no credential arrives, fallback after short delay
+      google.accounts.id.prompt((notification: unknown) => {
+        // If prompt is not displayed or skipped, fallback
+        setTimeout(() => {
+          if (!idFlowHandled) startCodeFlow();
+        }, 1200);
+      });
     } catch (e) {
-      toast.error("Google sign-in failed");
+      toast.error("Google sign-in failed to initialize");
     }
   };
 

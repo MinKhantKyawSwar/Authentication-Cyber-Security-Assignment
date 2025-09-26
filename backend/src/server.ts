@@ -7,6 +7,7 @@ import connectDB from "./config/db";
 import TokenService from "./services/TokenService";
 import AuthController from "./controllers/AuthController";
 import authRoutes from "./routes/authRoutes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -23,7 +24,8 @@ const startServer = async () => {
   app.use(
     cors({
       origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        if (!origin || allowedOrigins.includes(origin))
+          return callback(null, true);
         return callback(new Error("Not allowed by CORS"));
       },
       credentials: true,
@@ -31,6 +33,7 @@ const startServer = async () => {
   );
 
   app.use(express.json());
+  app.use(cookieParser());
   app.use(helmet());
 
   app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));

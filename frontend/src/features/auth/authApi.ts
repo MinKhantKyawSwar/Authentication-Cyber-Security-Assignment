@@ -31,8 +31,8 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: "/auth/resend-otp", method: "POST", body }),
     }),
     refresh: builder.mutation<
-      { accessToken: string; refreshToken: string },
-      { userId: string; refreshToken: string }
+      { accessToken: string },
+      { userId: string }
     >({
       query: (body) => ({
         url: "/auth/refresh",
@@ -49,8 +49,8 @@ export const authApi = baseApi.injectEndpoints({
         }),
       },
     ),
-    logoutServer: builder.mutation<void, void>({
-      query: () => ({ url: "/auth/logout", method: "POST" }),
+    logoutServer: builder.mutation<void, { userId: string }>({
+      query: (body) => ({ url: "/auth/logout", method: "POST", body }),
     }),
     getCurrentUser: builder.query<{ name: string; email: string }, void>({
       query: () => "/auth/whoami",

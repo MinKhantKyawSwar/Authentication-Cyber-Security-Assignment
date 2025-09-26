@@ -21,6 +21,7 @@ export default (authController: AuthController, tokenService: TokenService) => {
   router.post("/resend-otp", authController.resendOtp);
   router.post("/verify-otp", authController.verifyOtp);
   router.post("/refresh", authController.refresh);
+  router.post("/logout", authController.logout);
   router.get("/whoami", authMiddleware(tokenService), authController.whoami);
   router.get(
     "/security-audit",
