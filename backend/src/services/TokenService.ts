@@ -106,7 +106,7 @@ export default class TokenService {
     }
   }
 
-  async createRefreshToken(userId: mongoose.Types.ObjectId) {
+  async createRefreshToken(userId: mongoose.Types.ObjectId, deviceInfo?: string, ipAddress?: string) {
     const expiresInDays = 30;
     // Use a strong random token (UUID v4 is ok here; could switch to 32-byte random string)
     const refreshToken = randomUUID();
@@ -119,6 +119,8 @@ export default class TokenService {
       userId,
       hashedToken,
       expiresAt,
+      deviceInfo: deviceInfo || 'Unknown',
+      ipAddress: ipAddress || 'Unknown',
     });
 
     return refreshToken;
@@ -155,6 +157,8 @@ export default class TokenService {
       userId,
       hashedToken: newHash,
       expiresAt: newExpires,
+      deviceInfo: matched.deviceInfo || 'Unknown',
+      ipAddress: matched.ipAddress || 'Unknown',
     });
 
     return newRefreshToken;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-type Countdown = {
+export type Countdown = {
   totalMs: number;
   days: number;
   hours: number;
@@ -12,7 +12,10 @@ type Countdown = {
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-export function useTokenCountdown(issuedAt?: number | null, expSeconds?: number | null) {
+export function useTokenCountdown(
+  issuedAt?: number | null,
+  expSeconds?: number | null,
+) {
   const endsAt = useMemo(() => {
     if (expSeconds && expSeconds > 0) return expSeconds * 1000;
     if (issuedAt && issuedAt > 0) return issuedAt + THIRTY_DAYS_MS;
@@ -25,7 +28,9 @@ export function useTokenCountdown(issuedAt?: number | null, expSeconds?: number 
     const totalMs = Math.max(0, endsAt - now);
     const expired = totalMs === 0;
     const days = Math.floor(totalMs / (24 * 60 * 60 * 1000));
-    const hours = Math.floor((totalMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const hours = Math.floor(
+      (totalMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000),
+    );
     const minutes = Math.floor((totalMs % (60 * 60 * 1000)) / (60 * 1000));
     const seconds = Math.floor((totalMs % (60 * 1000)) / 1000);
     return { totalMs, days, hours, minutes, seconds, expired, endsAt };
@@ -90,5 +95,3 @@ export function decodeJwtExpiryMs(token?: string | null): number | null {
     return null;
   }
 }
-
-

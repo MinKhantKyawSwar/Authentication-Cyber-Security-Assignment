@@ -5,9 +5,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       <MainLayout>
-        <div className="h-screen">
-          <Home />
-        </div>
+        <Home />
       </MainLayout>
     </div>
   );

@@ -26,7 +26,6 @@ import {
 const Header: React.FC = () => {
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const dispatch = useDispatch();
 
@@ -71,16 +70,6 @@ const Header: React.FC = () => {
                   <FiMoon className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
                 )}
               </GamingButton>
-
-              <GamingButton variant="ghost" size="icon" className="relative">
-                <Icon
-                  icon="ion:notifications"
-                  className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200"
-                />
-                <Badge className="absolute -top-0 -right-0 h-5 w-5 flex items-center justify-center p-0 bg-[#F94D4D] text-accent-foreground text-xs">
-                  3
-                </Badge>
-              </GamingButton>
             </div>
 
             {/* User Profile Dropdown */}
@@ -89,7 +78,7 @@ const Header: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 focus:outline-none">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gradient-gaming text-white">
+                      <AvatarFallback className="bg-neutral-300 border-2 rounded-full border-neutral-700 text-black">
                         {(user.name || user.email).slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
