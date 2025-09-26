@@ -76,7 +76,19 @@ export default class AuthController {
       await mailSender(
         user.email,
         "Your One-Time Password",
-        `Your OTP code is <b>${otpCode}</b>. It expires in 5 minutes.`
+        `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+    <p>Hi ${user.name || ""},</p>
+    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+    <p style="text-align: center; margin: 30px 0;">
+      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+    </p>
+    <p>If you did not request this, please ignore this email.</p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+  </div>
+  `
       );
     } catch (mailErr) {
       console.warn("Login OTP email failed:", mailErr);
@@ -210,7 +222,19 @@ export default class AuthController {
         await mailSender(
           email,
           "Your One-Time Password",
-          `Your OTP code is <b>${otpCode}</b>. It expires in 5 minutes.`
+          `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+    <p>Hi ${user.name || ""},</p>
+    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+    <p style="text-align: center; margin: 30px 0;">
+      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+    </p>
+    <p>If you did not request this, please ignore this email.</p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+  </div>
+  `
         );
       } catch (mailErr) {
         console.warn("Google login OTP email failed:", mailErr);
@@ -316,7 +340,19 @@ export default class AuthController {
         await mailSender(
           email,
           "Your One-Time Password",
-          `Your OTP code is <b>${otpCode}</b>. It expires in 5 minutes.`
+          `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+    <p>Hi ${user.name || ""},</p>
+    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+    <p style="text-align: center; margin: 30px 0;">
+      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+    </p>
+    <p>If you did not request this, please ignore this email.</p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+  </div>
+  `
         );
       } catch (mailErr) {
         console.warn("Google redirect OTP email failed:", mailErr);
@@ -404,15 +440,24 @@ export default class AuthController {
       const refreshToken = (req as any).cookies?.rt as string | undefined;
       const userId = (req.body as any)?.userId as string | undefined;
       if (!refreshToken || !userId) {
-        return res.status(400).json({ message: "Missing refresh token or userId" });
+        return res
+          .status(400)
+          .json({ message: "Missing refresh token or userId" });
       }
 
-      const record = await this.tokenService.verifyRefreshToken(userId, refreshToken);
+      const record = await this.tokenService.verifyRefreshToken(
+        userId,
+        refreshToken
+      );
 
-      const accessToken = await this.tokenService.createAccessToken(record.userId as any);
+      const accessToken = await this.tokenService.createAccessToken(
+        record.userId as any
+      );
 
       // Rotate: revoke old and set new cookie
-      const newRefresh = await this.tokenService.createRefreshToken(record.userId as any);
+      const newRefresh = await this.tokenService.createRefreshToken(
+        record.userId as any
+      );
       record.isValid = true;
       await record.save();
 
@@ -437,7 +482,10 @@ export default class AuthController {
       const userId = (req.body as any)?.userId as string | undefined;
       if (refreshToken && userId) {
         try {
-          const record = await this.tokenService.verifyRefreshToken(userId, refreshToken);
+          const record = await this.tokenService.verifyRefreshToken(
+            userId,
+            refreshToken
+          );
           record.isValid = true;
           await record.save();
         } catch {
@@ -481,7 +529,19 @@ export default class AuthController {
         await mailSender(
           user.email,
           "Your One-Time Password",
-          `Your OTP code is <b>${otpCode}</b>. It expires in 5 minutes.`
+          `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+    <p>Hi ${user.name || ""},</p>
+    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+    <p style="text-align: center; margin: 30px 0;">
+      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+    </p>
+    <p>If you did not request this, please ignore this email.</p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+  </div>
+  `
         );
       } catch (mailErr) {
         console.warn("Resend OTP email failed:", mailErr);
@@ -493,7 +553,7 @@ export default class AuthController {
     }
   };
 
-  securityAudit  = async (req: Request, res: Response) => {
+  securityAudit = async (req: Request, res: Response) => {
     if (!req.user)
       return res.status(401).json({ message: "User is unauthorized." });
 
