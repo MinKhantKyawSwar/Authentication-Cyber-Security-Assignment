@@ -76,11 +76,14 @@ const Header: React.FC = () => {
             {user && token ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-2 focus:outline-none">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-neutral-300 border-2 rounded-full border-neutral-700 text-black">
-                        {(user.name || user.email).slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
+                  <button className="flex items-center space-x-2 p-1 rounded-md hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                    <Avatar className="h-10 w-10 border-2 border-neutral-700 rounded-full overflow-hidden">
+                      {/* If user has profile image, show it; otherwise fallback */}
+                      {
+                        <AvatarFallback className="bg-neutral-300 text-black flex items-center justify-center">
+                          {(user.name || user.email).slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      }
                     </Avatar>
                     <div className="hidden sm:block text-left">
                       <p className="text-sm font-medium">
@@ -89,15 +92,18 @@ const Header: React.FC = () => {
                     </div>
                   </button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent className="w-48">
                   <DropdownMenuLabel className="text-xs">
                     Signed in as {user.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <div className="flex gap-2 text-red-500">
-                      <Icon icon="hugeicons:logout-02" className="h-5 w-5 " />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="hover:bg-red-100 focus:bg-red-100"
+                  >
+                    <div className="flex items-center gap-2 text-red-500">
+                      <Icon icon="hugeicons:logout-02" className="h-5 w-5" />
                       <span>Logout</span>
                     </div>
                   </DropdownMenuItem>
@@ -106,7 +112,7 @@ const Header: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="text-white font-semibold hover:underline"
+                className="text-white font-semibold hover:underline transition-colors duration-200"
               >
                 Login
               </Link>

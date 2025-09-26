@@ -22,8 +22,9 @@ git clone [https://github.com/MinKhantKyawSwar/Authentication-Cyber-Security-Ass
 Navigate and Install Dependencies
 Move into the backend directory and install the required Node.js packages.
 
-````cd backend
-``` npm install
+````backend dependencies installations
+cd backend
+npm install
 
 Configure Environment Variables
 Create a file named .env in the backend/ directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.).
