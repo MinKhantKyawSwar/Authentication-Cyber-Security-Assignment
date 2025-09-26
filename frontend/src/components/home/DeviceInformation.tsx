@@ -16,9 +16,9 @@ const DeviceInformation = ({ deviceInfo }: Props) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.06 }}
-      className="md:col-span-2 p-[1px] rounded-xl bg-gradient-to-r from-[#0fdcdb] via-[#32a852] to-[#a0f0c0]"
+      className="md:col-span-2 p-[1px] rounded-xl bg-gradient-to-r from-[#0fdcdb] via-[#32a852] to-[#a0f0c0] "
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg">
+      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg h-full">
         <div className="flex items-center gap-2">
           <Smartphone className="h-5 w-5 text-[#32a852]" />
           <h2 className="text-xl font-semibold">Device Information</h2>

@@ -91,7 +91,7 @@ const Home = () => {
   }, [token]);
 
   return (
-    <section className="min-h-screen text-white px-10 font-inter space-y-4 ">
+    <section className="min-h-screen text-white px-2 md:px-10 font-inter space-y-2 md:space-y-4 ">
       <AuthExpiryGuard />
       <div className="flex flex-col md:flex-row items-center justify-between">
         <div>
