@@ -85,27 +85,27 @@ The diagram below illustrates the purpose, storage, lifespan, and usage of each 
 ```mermaid
 graph TD
     subgraph Access Token (JWT)
-        A[Type: JWT] --> B(Lifespan: ~15 minutes);
-        A --> C(Storage: Client Memory/localStorage);
-        A --> D(Usage: Authorization Header for ALL Protected API Calls);
-        B --> E{If Expired/Invalid?};
+        A[Type: JWT] --> B(Lifespan: ~15 minutes)
+        A --> C(Storage: Client Memory/localStorage)
+        A --> D(Usage: Authorization Header for ALL Protected API Calls)
+        B --> E{If Expired/Invalid?}
     end
 
     subgraph Refresh Token (Opaque String)
-        F[Type: Opaque String] --> G(Lifespan: ~30 days);
-        F --> H(Storage: Secure, HttpOnly Cookie);
-        F --> I(Usage: Only to Request a New Access Token at /api/auth/refresh);
-        I --> J(Server Action: Token Rotation - New Refresh Token issued on successful refresh);
-        G --> E;
+        F[Type: Opaque String] --> G(Lifespan: ~30 days)
+        F --> H(Storage: Secure, HttpOnly Cookie)
+        F --> I(Usage: Only to Request a New Access Token at /api/auth/refresh)
+        I --> J(Server Action: Token Rotation - New Refresh Token issued on successful refresh)
+        G --> E
     end
 
-    E -- Yes --> K(Client must use Refresh Token to get a new Access Token);
-    E -- No --> D;
+    E -- Yes --> K(Client must use Refresh Token to get a new Access Token)
+    E -- No --> D
 
-    K --> I;
-    I --> L(Server Validates Refresh Token);
-    L -- Valid --> M(Issue New Access Token + New Refresh Token);
-    L -- Invalid/Expired --> N(Force Re-Login/Logout);
+    K --> I
+    I --> L(Server Validates Refresh Token)
+    L -- Valid --> M(Issue New Access Token + New Refresh Token)
+    L -- Invalid/Expired --> N(Force Re-Login/Logout)
 ```
 
 ### Authentication Flow Sequence Diagram
