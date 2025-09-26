@@ -66,7 +66,7 @@ npm install
 
 ### Start the Frontend Development Server
 
-Start the React development server. It usually runs on `http://localhost:5173` and opens automatically in your browser.
+Start the React development server. It usually runs on `http://localhost:8080` and opens automatically in your browser.
 
 ```bash
 npm run dev

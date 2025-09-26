@@ -4,9 +4,6 @@ import {
   selectCurrentToken,
 } from "@/features/auth/authSlice";
 import { useSelector } from "react-redux";
-import { ShieldCheck, Smartphone } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { motion } from "framer-motion";
 import {
   decodeJwtExpiryMs,
   useTokenCountdown,
@@ -94,7 +91,7 @@ const Home = () => {
   }, [token]);
 
   return (
-    <section className="min-h-screen text-white p-8 font-inter space-y-8 ">
+    <section className="min-h-screen text-white px-10 font-inter space-y-4 ">
       <AuthExpiryGuard />
       <div className="flex flex-col md:flex-row items-center justify-between">
         <div>

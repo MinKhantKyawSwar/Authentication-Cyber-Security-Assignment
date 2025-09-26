@@ -1,21 +1,29 @@
-import React, { useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setCredentials } from '@/features/auth/authSlice';
-import { useVerifyOtpMutation } from '@/features/auth/authApi';
-import Header from '@/components/Header';
+import React, { useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { setCredentials } from "@/features/auth/authSlice";
+import { useVerifyOtpMutation } from "@/features/auth/authApi";
+import Header from "@/components/Header";
 
 const OtpPage: React.FC = () => {
   const [params] = useSearchParams();
-  const emailParam = params.get('email') || sessionStorage.getItem('pendingEmail') || '';
+  const emailParam =
+    params.get("email") || sessionStorage.getItem("pendingEmail") || "";
   const [email] = useState(emailParam);
-  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
+  const [otpDigits, setOtpDigits] = useState<string[]>([
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
 
-  const code = otpDigits.join('');
+  const code = otpDigits.join("");
 
   const handleVerify = async () => {
     try {
@@ -26,16 +34,19 @@ const OtpPage: React.FC = () => {
           token: res.accessToken,
         }),
       );
-      localStorage.setItem('auth', JSON.stringify({ user: res.user, token: res.accessToken }));
-      navigate('/');
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({ user: res.user, token: res.accessToken }),
+      );
+      navigate("/");
     } catch (e) {
       // eslint-disable-next-line no-alert
-      alert('Invalid or expired OTP');
+      alert("Invalid or expired OTP");
     }
   };
 
   const handleChange = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, '').slice(0, 1);
+    const digit = value.replace(/\D/g, "").slice(0, 1);
     const next = [...otpDigits];
     next[index] = digit;
     setOtpDigits(next);
@@ -44,24 +55,33 @@ const OtpPage: React.FC = () => {
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otpDigits[index] && inputsRef.current[index - 1]) {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (
+      e.key === "Backspace" &&
+      !otpDigits[index] &&
+      inputsRef.current[index - 1]
+    ) {
       const prev = index - 1;
       const next = [...otpDigits];
-      next[prev] = '';
+      next[prev] = "";
       setOtpDigits(next);
       inputsRef.current[prev]?.focus();
       e.preventDefault();
     }
-    if (e.key === 'ArrowLeft' && inputsRef.current[index - 1]) inputsRef.current[index - 1]?.focus();
-    if (e.key === 'ArrowRight' && inputsRef.current[index + 1]) inputsRef.current[index + 1]?.focus();
+    if (e.key === "ArrowLeft" && inputsRef.current[index - 1])
+      inputsRef.current[index - 1]?.focus();
+    if (e.key === "ArrowRight" && inputsRef.current[index + 1])
+      inputsRef.current[index + 1]?.focus();
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
     if (!text) return;
-    const next = text.split('');
-    while (next.length < 6) next.push('');
+    const next = text.split("");
+    while (next.length < 6) next.push("");
     setOtpDigits(next);
     const lastIndex = Math.min(text.length, 5);
     inputsRef.current[lastIndex]?.focus();
@@ -69,21 +89,21 @@ const OtpPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleResend = async () => {
     try {
-      await fetch('http://localhost:4000/api/auth/resend-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("http://localhost:4000/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
       // eslint-disable-next-line no-alert
-      alert('OTP resent');
+      alert("OTP resent");
     } catch (err) {
       // eslint-disable-next-line no-alert
-      alert('Failed to resend OTP');
+      alert("Failed to resend OTP");
     }
   };
 
@@ -91,10 +111,17 @@ const OtpPage: React.FC = () => {
     <div className="min-h-screen">
       <Header />
       <div className="max-w-md mx-auto px-4 pt-10">
-        <button onClick={handleBack} className="text-white mb-4 hover:underline">← Back to login</button>
-        <div className="bg-[#2A2633] p-6 rounded-md w-full">
+        <button
+          onClick={handleBack}
+          className="text-white mb-4 hover:underline"
+        >
+          ← Back to login
+        </button>
+        <div className="bg-[#1F2430] border border-[#2A3340] p-6 rounded-md w-full">
           <h1 className="text-white text-xl mb-2">Enter OTP</h1>
-          <p className="text-gray-400 text-sm mb-4">We sent a 6-digit code to {email || 'your email'}.</p>
+          <p className="text-gray-400 text-sm mb-4">
+            We sent a 6-digit code to {email || "your email"}.
+          </p>
           {/* Email comes from navigation state/query; hidden from user */}
           <div className="flex items-center justify-between gap-2 mb-4">
             {otpDigits.map((d, i) => (
@@ -112,10 +139,21 @@ const OtpPage: React.FC = () => {
               />
             ))}
           </div>
-          <button onClick={handleVerify} disabled={isLoading || code.length !== 6} className="w-full py-2 rounded bg-[#9C6CFE] text-white disabled:opacity-60">Verify</button>
-          <div className="flex items-center justify-between mt-4">
+          <button
+            onClick={handleVerify}
+            disabled={isLoading || code.length !== 6}
+            className="w-full py-2 rounded bg-[#ffffff] text-[#091e45] disabled:opacity-60"
+          >
+            Verify
+          </button>
+          <div className="flex items-center justify-between mt-4s">
             <span className="text-gray-400 text-sm">Didn't get the code?</span>
-            <button onClick={handleResend} className="text-[#9C6CFE] text-sm hover:underline">Resend</button>
+            <button
+              onClick={handleResend}
+              className="text-[#6c9ffe] text-sm hover:underline"
+            >
+              Resend
+            </button>
           </div>
         </div>
       </div>
@@ -124,5 +162,3 @@ const OtpPage: React.FC = () => {
 };
 
 export default OtpPage;
-
-
