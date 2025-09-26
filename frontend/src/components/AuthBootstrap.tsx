@@ -1,8 +1,13 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentToken, selectCurrentUser, setCredentials, logout } from '@/features/auth/authSlice';
-import { useGetCurrentUserQuery } from '@/features/auth/authApi';
-import { decodeJwtExpiryMs } from '@/hooks/use-token-countdown';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectCurrentToken,
+  selectCurrentUser,
+  setCredentials,
+  logout,
+} from "@/features/auth/authSlice";
+import { useGetCurrentUserQuery } from "@/features/auth/authApi";
+import { decodeJwtExpiryMs } from "@/hooks/use-token-countdown";
 
 export default function AuthBootstrap() {
   const dispatch = useDispatch();
@@ -27,13 +32,13 @@ export default function AuthBootstrap() {
 
   useEffect(() => {
     if (isSuccess && data && token) {
-      const stored = localStorage.getItem('auth');
-      const parsed = stored ? JSON.parse(stored) : {};
+      const stored = localStorage.getItem("auth");
+      // const parsed = stored ? JSON.parse(stored) : {};
       dispatch(
         setCredentials({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           user: { name: data.name, email: data.email } as any,
           token,
-          refreshToken: parsed.refreshToken,
         }),
       );
     }
@@ -41,5 +46,3 @@ export default function AuthBootstrap() {
 
   return null;
 }
-
-
