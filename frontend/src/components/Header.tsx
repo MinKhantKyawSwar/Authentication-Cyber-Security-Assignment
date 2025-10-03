@@ -110,12 +110,14 @@ const Header: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link
-                to="/login"
-                className="text-white font-semibold hover:underline transition-colors duration-200"
-              >
-                Login
-              </Link>
+              <>
+                <Link
+                  to="/sign-up"
+                  className="text-white font-semibold hover:underline transition-colors duration-200"
+                >
+                  Get Started
+                </Link>
+              </>
             )}
           </div>
         </div>

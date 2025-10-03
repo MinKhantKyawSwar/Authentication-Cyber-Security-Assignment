@@ -40,7 +40,6 @@ const OtpPage: React.FC = () => {
       );
       navigate("/");
     } catch (e) {
-      // eslint-disable-next-line no-alert
       alert("Invalid or expired OTP");
     }
   };
@@ -99,10 +98,8 @@ const OtpPage: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      // eslint-disable-next-line no-alert
       alert("OTP resent");
     } catch (err) {
-      // eslint-disable-next-line no-alert
       alert("Failed to resend OTP");
     }
   };
@@ -144,7 +141,7 @@ const OtpPage: React.FC = () => {
             disabled={isLoading || code.length !== 6}
             className="w-full py-2 rounded bg-[#ffffff] text-[#091e45] disabled:opacity-60"
           >
-            Verify
+            Hop In
           </button>
           <div className="flex items-center justify-between mt-4s">
             <span className="text-gray-400 text-sm">Didn't get the code?</span>
