@@ -48,7 +48,7 @@ const Header: React.FC = () => {
           {/* Right side */}
           <div className="flex items-center space-x-4 sm:space-x-6">
             {/* Theme Toggle & Notifications */}
-            <div className="flex gap-2 sm:gap-4">
+            {/* <div className="flex gap-2 sm:gap-4">
               <GamingButton
                 variant="ghost"
                 size="icon"
@@ -70,7 +70,7 @@ const Header: React.FC = () => {
                   <FiMoon className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
                 )}
               </GamingButton>
-            </div>
+            </div> */}
 
             {/* User Profile Dropdown */}
             {user && token ? (

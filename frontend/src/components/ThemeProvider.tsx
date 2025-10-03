@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = 'dark' | 'light';
+type Theme = "dark" | "light";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: 'dark',
+  theme: "dark",
   setTheme: () => null,
   toggleTheme: () => null,
 };
@@ -24,16 +24,18 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'dark',
-  storageKey = 'gaming-ui-theme',
+  defaultTheme = "dark",
+  storageKey = "cyber-security-assignment",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem(storageKey) as Theme | null;
-    if (stored === 'light' || stored === 'dark') return stored;
+    if (stored === "light" || stored === "dark") return stored;
     try {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return prefersDark ? 'dark' : defaultTheme;
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return prefersDark ? "dark" : defaultTheme;
     } catch {
       return defaultTheme;
     }
@@ -42,12 +44,12 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove('light', 'dark');
+    root.classList.remove("light", "dark");
 
-    if (theme === 'light') {
-      root.classList.add('light');
+    if (theme === "light") {
+      root.classList.add("light");
     } else {
-      root.classList.add('dark');
+      root.classList.add("dark");
     }
   }, [theme]);
 
@@ -59,7 +61,7 @@ export function ThemeProvider({
     },
     toggleTheme: () => {
       setTheme((prev) => {
-        const next = prev === 'dark' ? 'light' : 'dark';
+        const next = prev === "dark" ? "light" : "dark";
         localStorage.setItem(storageKey, next);
         return next as Theme;
       });
@@ -76,7 +78,8 @@ export function ThemeProvider({
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider');
+  if (context === undefined)
+    throw new Error("useTheme must be used within a ThemeProvider");
 
   return context;
 };

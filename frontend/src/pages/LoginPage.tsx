@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
-import { loginBg } from "@/assests";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
   useLoginMutation,
@@ -9,6 +8,7 @@ import {
 } from "@/features/auth/authApi";
 import { setCredentials } from "@/features/auth/authSlice";
 import { toast } from "react-hot-toast";
+import { Landing } from "@/assests";
 
 interface FormState {
   email: string;
@@ -244,106 +244,126 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen w-full font-inter flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-[#1F2430] border border-[#2A3340] rounded-2xl shadow-xl p-6 md:p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-white">Authentic</h1>
-          <p className="text-gray-300 mt-2 text-sm">
-            Welcome back! Please sign in to continue.
-          </p>
-        </div>
+    <section className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center px-4 sm:px-6 bg-[#12141D]">
+      {/* Left Image Section */}
+      <div className="hidden md:flex md:w-3/5 items-center justify-center p-6">
+        <img
+          src={Landing}
+          alt="Login Illustration"
+          className="w-full max-w-md object-contain"
+        />
+      </div>
 
-        <button
-          onClick={handleGoogleLogin}
-          disabled={isGoogleLoading}
-          className="w-full py-3 rounded-lg bg-white text-black font-semibold text-base shadow hover:opacity-90 transition flex items-center justify-center gap-2"
-        >
-          <Icon icon="logos:google-icon" className="w-5 h-5" />
-          {isGoogleLoading ? "Connecting..." : "Continue with Google"}
-        </button>
+      {/* Right Form Section */}
+      <div className="w-full md:w-2/5 flex items-center min-h-screen bg-white justify-center p-6">
+        <div className="w-full max-w-md p-6 md:p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-extrabold text-black">Authentic</h1>
+            <p className="text-gray-500 mt-2 text-sm sm:text-base">
+              Welcome back! Please sign in to continue.
+            </p>
+          </div>
 
-        <div className="flex items-center my-6">
-          <div className="flex-grow h-px bg-gray-700" />
-          <span className="mx-3 text-gray-400 text-xs">OR</span>
-          <div className="flex-grow h-px bg-gray-700" />
-        </div>
-
-        <div className="relative mb-4">
-          <Icon
-            icon="eva:email-outline"
-            className="absolute left-3 top-3 text-gray-400 w-5 h-5"
-          />
-          <input
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="Email address"
-            className={`w-full pl-10 pr-4 py-3 rounded-lg bg-[#252B36] text-white placeholder-gray-400 border ${
-              errors.email ? "border-red-500" : "border-transparent"
-            } focus:outline-none focus:ring-2 focus:ring-[#38BDF8]`}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-          )}
-        </div>
-
-        <div className="relative mb-2">
-          <Icon
-            icon="si:lock-line"
-            className="absolute left-3 top-3 text-gray-400 w-5 h-5"
-          />
-          <input
-            type={showPassword ? "text" : "password"}
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            placeholder="Password"
-            className={`w-full pl-10 pr-10 py-3 rounded-lg bg-[#252B36] text-white placeholder-gray-400 border ${
-              errors.password ? "border-red-500" : "border-transparent"
-            } focus:outline-none focus:ring-2 focus:ring-[#38BDF8]`}
-          />
-          <Icon
-            icon={
-              showPassword
-                ? "iconamoon:eye-off-duotone"
-                : "iconamoon:eye-duotone"
-            }
-            className="absolute right-3 top-3 bg-[#2A2633] text-gray-400 w-5 h-5 cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-          )}
-        </div>
-
-        <div className="mb-6 text-right">
-          <Link
-            to="/forgot-password"
-            className="text-xs text-[#38BDF8] hover:underline"
+          {/* Google Login */}
+          <button
+            onClick={handleGoogleLogin}
+            disabled={isGoogleLoading}
+            className="w-full py-3 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center gap-2"
           >
-            Forgot password?
-          </Link>
-        </div>
+            <Icon icon="logos:google-icon" className="w-5 h-5" />
+            {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+          </button>
 
-        <button
-          onClick={handleLogin}
-          disabled={isLoading}
-          className="w-full py-3 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition"
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Signing in...</span>
-            </div>
-          ) : (
-            "Login"
-          )}
-        </button>
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow h-px bg-gray-700" />
+            <span className="mx-3 text-gray-400 text-xs">OR</span>
+            <div className="flex-grow h-px bg-gray-700" />
+          </div>
 
-        <div className="text-center text-white text-sm mt-6">
-          Don’t have an account?{" "}
-          <Link to="/sign-up" className="text-[#38BDF8] hover:underline">
-            Sign Up
-          </Link>
+          {/* Email Input */}
+          <div className="relative mb-4">
+            <Icon
+              icon="eva:email-outline"
+              className="absolute left-3 top-3 text-gray-400 w-5 h-5"
+            />
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="Email address"
+              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-[#252B36] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
+                errors.email ? "border-red-500" : "border-transparent"
+              }`}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          {/* Password Input */}
+          <div className="relative mb-2">
+            <Icon
+              icon="si:lock-line"
+              className="absolute left-3 top-3 text-gray-400 w-5 h-5"
+            />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="Password"
+              className={`w-full pl-10 pr-10 py-3 rounded-lg bg-[#252B36] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
+                errors.password ? "border-red-500" : "border-transparent"
+              }`}
+            />
+            <Icon
+              icon={
+                showPassword
+                  ? "iconamoon:eye-off-duotone"
+                  : "iconamoon:eye-duotone"
+              }
+              className="absolute right-3 top-3 text-gray-400 w-6 h-6 cursor-pointer rounded"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* Forgot Password */}
+          <div className="mb-6 text-right">
+            <Link
+              to="/forgot-password"
+              className="text-xs sm:text-sm text-[#003cff] hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Login Button */}
+          <button
+            onClick={handleLogin}
+            disabled={isLoading}
+            className="w-full py-3 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              "Login"
+            )}
+          </button>
+
+          {/* Sign Up Link */}
+          <div className="text-center text-black text-sm mt-6">
+            Don’t have an account?{" "}
+            <Link to="/sign-up" className="text-[#003cff] hover:underline">
+              Sign Up
+            </Link>
+          </div>
         </div>
       </div>
     </section>

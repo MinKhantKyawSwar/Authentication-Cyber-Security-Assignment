@@ -136,14 +136,7 @@ const OtpPage: React.FC = () => {
               />
             ))}
           </div>
-          <button
-            onClick={handleVerify}
-            disabled={isLoading || code.length !== 6}
-            className="w-full py-2 rounded bg-[#ffffff] text-[#091e45] disabled:opacity-60"
-          >
-            Hop In
-          </button>
-          <div className="flex items-center justify-between mt-4s">
+          <div className="flex items-center justify-between mb-4">
             <span className="text-gray-400 text-sm">Didn't get the code?</span>
             <button
               onClick={handleResend}
@@ -152,6 +145,13 @@ const OtpPage: React.FC = () => {
               Resend
             </button>
           </div>
+          <button
+            onClick={handleVerify}
+            disabled={isLoading || code.length !== 6}
+            className="w-full py-2 rounded-md bg-[#ffffff] text-[#091e45] disabled:opacity-60 hover:font-semibold"
+          >
+            Hop In
+          </button>
         </div>
       </div>
     </div>
