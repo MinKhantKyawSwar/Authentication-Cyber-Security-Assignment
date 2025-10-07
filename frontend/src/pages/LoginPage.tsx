@@ -8,7 +8,7 @@ import {
 } from "@/features/auth/authApi";
 import { setCredentials } from "@/features/auth/authSlice";
 import { toast } from "react-hot-toast";
-import { Landing } from "@/assests";
+import { backgroundOne } from "@/assests";
 
 interface FormState {
   email: string;
@@ -244,22 +244,17 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center px-4 sm:px-6 bg-[#12141D]">
-      {/* Left Image Section */}
-      <div className="hidden md:flex md:w-3/5 items-center justify-center p-6">
-        <img
-          src={Landing}
-          alt="Login Illustration"
-          className="w-full max-w-md object-contain"
-        />
-      </div>
-
-      {/* Right Form Section */}
-      <div className="w-full md:w-2/5 flex items-center min-h-screen bg-white justify-center p-6">
-        <div className="w-full max-w-md p-6 md:p-8">
+    <section
+      className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: `url(${backgroundOne})` }}
+    >
+      <div className="w-full flex items-center min-h-screen justify-center ">
+        <div className="w-full max-w-lg p-6 md:p-8 bg-white/85 rounded-md shadow-md backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-black">Authentic</h1>
+            <h1 className="h-full text-3xl font-extrabold text-black">
+              Authentic
+            </h1>
             <p className="text-gray-500 mt-2 text-sm sm:text-base">
               Welcome back! Please sign in to continue.
             </p>
@@ -293,7 +288,7 @@ const LoginPage: React.FC = () => {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="Email address"
-              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-[#252B36] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
+              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-[#e4ecff] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
                 errors.email ? "border-red-500" : "border-transparent"
               }`}
             />
@@ -313,7 +308,7 @@ const LoginPage: React.FC = () => {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Password"
-              className={`w-full pl-10 pr-10 py-3 rounded-lg bg-[#252B36] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
+              className={`w-full pl-10 pr-10 py-3 rounded-lg bg-[#e4ecff] text-black placeholder-gray-400 border transition focus:outline-none focus:ring-2 focus:ring-[#38BDF8] ${
                 errors.password ? "border-red-500" : "border-transparent"
               }`}
             />

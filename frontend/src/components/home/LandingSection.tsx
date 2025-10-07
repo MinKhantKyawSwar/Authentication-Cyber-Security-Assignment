@@ -31,7 +31,7 @@ const LandingSection = () => {
 
         {/* Title & Subtitle */}
         <div className="flex flex-col justify-center items-center mt-20 text-center">
-          <h1 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-pink-500 to-rose-500 text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-snug sm:leading-normal md:leading-[1.2]">
+          <h1 className="font-extrabold text-transparent h-20 bg-clip-text bg-gradient-to-r from-indigo-600 via-pink-500 to-rose-500 text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-snug sm:leading-normal md:leading-[1.2]">
             Protecting a Web Application
           </h1>
           <p className="text-sm sm:text-base md:text-lg mt-4 md:mt-6 max-w-xl md:max-w-2xl text-neutral-400 leading-relaxed">

@@ -35,16 +35,16 @@ function SpotlightBox({ children }) {
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="cursor-pointer md:h-[300px] relative rounded-2xl overflow-hidden bg-gradient-to-br bg-white shadow-lg"
+      className="cursor-pointer relative rounded-2xl overflow-hidden bg-gradient-to-br bg-white shadow-lg"
     >
       {/* Spotlight border glow */}
       <div
-        className="absolute inset-0 border-2 border-transparent rounded-2xl pointer-events-none transition-opacity duration-500 ease-out"
+        className="absolute inset-0 border-2 border-transparent rounded-2xl  pointer-events-none transition-opacity duration-500 ease-out"
         style={{
           maskImage: `radial-gradient(180px at ${smoothPos.x}px ${smoothPos.y}px, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)`,
           WebkitMaskImage: `radial-gradient(180px at ${smoothPos.x}px ${smoothPos.y}px, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)`,
           background:
-            "radial-gradient(circle, rgba(99,102,241,0.7) 0%, rgba(236,72,153,0.6) 60%, transparent 100%)",
+            "radial-gradient(circle,rgba(71, 203, 255, 1) 0%, rgba(61, 235, 133, 1) 36%, rgba(191, 255, 117, 1) 71%, rgba(237, 221, 83, 1) 100%)",
           opacity: pos.x === -9999 ? 0 : 1,
           transition: "opacity 0.4s ease-in-out",
         }}

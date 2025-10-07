@@ -1,5 +1,3 @@
-import SpotlightBox from "../animated-ui/SpotLightBox";
-
 const securityData = [
   {
     title: "Access & Refresh Tokens",
@@ -14,12 +12,12 @@ const securityData = [
   {
     title: "Authentication",
     description:
-      "Verifies a user’s identity using methods like passwords, biometrics, or multi-factor authentication (MFA).",
+      "Verifies a user’s identity using various methods such as passwords, biometrics, or  (MFA) to ensure secure access.",
   },
   {
     title: "Hashing with Argon2",
     description:
-      "A secure, modern password hashing algorithm designed to resist GPU cracking and brute-force attacks.",
+      "Implements a modern password hashing algorithm, designed to resist brute-force attacks, ensuring sensitive user credentials remain protected.",
   },
 ];
 
@@ -40,19 +38,24 @@ const GridSection = () => {
       </div>
 
       {/* Right Security Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 ">
-        {securityData.map((item, i) => (
-          <SpotlightBox key={i}>
-            <div className="p-5 sm:p-6 text-center rounded-2xl transition-transform duration-300 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 ">
+        {securityData.map((item, i) => {
+          const borderRight = i % 2 === 0 ? "sm:border-r" : "";
+          const borderBottom = i < 2 ? "sm:border-b" : "";
+          return (
+            <div
+              key={i}
+              className={`p-5 sm:p-6 text-center transition-transform duration-300 ${borderRight} ${borderBottom}`}
+            >
               <h2 className="text-xl sm:text-2xl font-bold mb-2">
                 {item.title}
               </h2>
-              <p className="text-sm sm:text-base text-neutral-700">
+              <p className="text-sm sm:text-base text-neutral-400">
                 {item.description}
               </p>
             </div>
-          </SpotlightBox>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

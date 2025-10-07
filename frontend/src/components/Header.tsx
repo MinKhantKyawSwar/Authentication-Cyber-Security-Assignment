@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiSun, FiMoon } from "react-icons/fi";
 import { useTheme } from "./ThemeProvider";
-import { GamingButton } from "./ui/gaming-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Icon } from "@iconify/react";
-import Sidebar from "./Sidebar";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   logout,
@@ -35,7 +32,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-2xl">
         <div className="px-4 h-16 flex items-center justify-between mx-5">
           {/* Left side */}
           <div className="flex justify-between items-center space-x-4 sm:space-x-10">
@@ -45,33 +42,7 @@ const Header: React.FC = () => {
             </Link>
           </div>
 
-          {/* Right side */}
           <div className="flex items-center space-x-4 sm:space-x-6">
-            {/* Theme Toggle & Notifications */}
-            {/* <div className="flex gap-2 sm:gap-4">
-              <GamingButton
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                aria-label={
-                  theme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-                title={
-                  theme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-              >
-                {theme === "dark" ? (
-                  <FiSun className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
-                ) : (
-                  <FiMoon className="h-5 w-5 text-white hover:scale-105 transition-transform duration-200" />
-                )}
-              </GamingButton>
-            </div> */}
-
             {/* User Profile Dropdown */}
             {user && token ? (
               <DropdownMenu>
@@ -113,7 +84,7 @@ const Header: React.FC = () => {
               <>
                 <Link
                   to="/sign-up"
-                  className="text-white font-semibold hover:underline transition-colors duration-200"
+                  className="text-gray-500 hover:text-white font-semibold hover:underline transition-colors duration-200 ${headerClassName}"
                 >
                   Get Started
                 </Link>

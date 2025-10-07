@@ -4,8 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { store } from "./store/store";
 import { HomePage, LoginPage, RegisterPage, NotFound } from "./pages";
 import OtpPage from "./pages/OtpPage";
-import { GameToaster } from "./components/animated-ui/GameToaster";
-// import AuthExpiryGuard from './components/AuthExpiryGuard';
 import AuthBootstrap from "./components/AuthBootstrap";
 
 const App = () => (

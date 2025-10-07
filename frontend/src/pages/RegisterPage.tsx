@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useRegisterMutation } from "@/features/auth/authApi";
 import { toast } from "react-hot-toast";
+import { backgroundTwo } from "@/assests";
 
 interface FormState {
   name: string;
@@ -116,111 +117,118 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen w-full font-inter flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-[#1F2430] border border-[#2A3340] rounded-2xl shadow-xl p-6 md:p-8">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-extrabold text-white">Authentic</h1>
-          <p className="text-gray-300 mt-2 text-sm">Create your account</p>
-        </div>
+    <section
+      className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: `url(${backgroundTwo})` }}
+    >
+      <div className="w-full max-w-lg p-6 md:p-8 bg-white/85 rounded-md shadow-md backdrop-blur-sm">
+        <div className="w-full max-w-md p-6 md:p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-extrabold text-black">Authentic</h1>
+            <p className="text-gray-500 mt-2 text-sm sm:text-base">
+              Create your account
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          {["name", "email", "password", "confirmPassword"].map((field) => {
-            const isPassword =
-              field === "password" || field === "confirmPassword";
-            const show =
-              field === "password" ? showPassword : showConfirmPassword;
-            const toggle =
-              field === "password" ? setShowPassword : setShowConfirmPassword;
-            const type = isPassword ? (show ? "text" : "password") : "text";
-            const placeholder =
-              field === "name"
-                ? "Enter your name"
-                : field === "email"
-                  ? "Enter your email"
-                  : field === "password"
-                    ? "Enter your password"
-                    : "Confirm your password";
-            return (
-              <div key={field} className="relative">
-                <Icon
-                  icon={isPassword ? "si:lock-line" : "basil:user-outline"}
-                  className="absolute left-3 top-3 text-gray-400 w-5 h-5"
-                />
-                <input
-                  type={type}
-                  value={form[field as keyof FormState] as string}
-                  onChange={(e) =>
-                    setForm({ ...form, [field]: e.target.value })
-                  }
-                  placeholder={placeholder}
-                  className={`w-full pl-10 pr-10 py-3 rounded-lg bg-[#252B36] text-white placeholder-gray-400 border ${
-                    errors[field as keyof ErrorState]
-                      ? "border-red-500"
-                      : "border-transparent"
-                  } focus:outline-none focus:ring-2 focus:ring-[#38BDF8]`}
-                />
-                {isPassword && (
+          <div className="space-y-4">
+            {["name", "email", "password", "confirmPassword"].map((field) => {
+              const isPassword =
+                field === "password" || field === "confirmPassword";
+              const show =
+                field === "password" ? showPassword : showConfirmPassword;
+              const toggle =
+                field === "password" ? setShowPassword : setShowConfirmPassword;
+              const type = isPassword ? (show ? "text" : "password") : "text";
+              const placeholder =
+                field === "name"
+                  ? "Enter your name"
+                  : field === "email"
+                    ? "Enter your email"
+                    : field === "password"
+                      ? "Enter your password"
+                      : "Confirm your password";
+              return (
+                <div key={field} className="relative">
                   <Icon
-                    icon={
-                      show
-                        ? "iconamoon:eye-off-duotone"
-                        : "iconamoon:eye-duotone"
-                    }
-                    className="absolute right-3 top-3 text-gray-400 w-5 h-5 cursor-pointer"
-                    onClick={() => toggle((prev) => !prev)}
+                    icon={isPassword ? "si:lock-line" : "basil:user-outline"}
+                    className="absolute left-3 top-3 text-gray-400 w-5 h-5"
                   />
-                )}
-                {errors[field as keyof ErrorState] && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors[field as keyof ErrorState]}
-                  </p>
-                )}
+                  <input
+                    type={type}
+                    value={form[field as keyof FormState] as string}
+                    onChange={(e) =>
+                      setForm({ ...form, [field]: e.target.value })
+                    }
+                    placeholder={placeholder}
+                    className={`w-full pl-10 pr-10 py-3 text-black rounded-lg bg-[#e4ecff] placeholder-gray-400 border ${
+                      errors[field as keyof ErrorState]
+                        ? "border-red-500"
+                        : "border-transparent"
+                    } focus:outline-none focus:ring-2 focus:ring-[#38BDF8]`}
+                  />
+                  {isPassword && (
+                    <Icon
+                      icon={
+                        show
+                          ? "iconamoon:eye-off-duotone"
+                          : "iconamoon:eye-duotone"
+                      }
+                      className="absolute right-3 top-3 text-gray-400 w-5 h-5 cursor-pointer"
+                      onClick={() => toggle((prev) => !prev)}
+                    />
+                  )}
+                  {errors[field as keyof ErrorState] && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors[field as keyof ErrorState]}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col mt-4 text-sm">
+            <label className="flex items-center text-gray-700">
+              <input
+                type="checkbox"
+                checked={form.terms}
+                onChange={(e) => setForm({ ...form, terms: e.target.checked })}
+                className="mr-2"
+              />
+              I agree to the{" "}
+              <Link
+                to="/terms-and-conditions"
+                className="text-[#003cff] hover:underline ml-1"
+              >
+                Terms and Conditions
+              </Link>
+            </label>
+            {errors.terms && (
+              <p className="text-red-500 text-xs mt-1">{errors.terms}</p>
+            )}
+          </div>
+
+          <button
+            onClick={handleSignUp}
+            disabled={isLoading}
+            className="w-full py-3 mt-6 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Signing up...</span>
               </div>
-            );
-          })}
-        </div>
+            ) : (
+              "Create an account"
+            )}
+          </button>
 
-        <div className="flex flex-col mt-4 text-sm">
-          <label className="flex items-center text-gray-300">
-            <input
-              type="checkbox"
-              checked={form.terms}
-              onChange={(e) => setForm({ ...form, terms: e.target.checked })}
-              className="mr-2"
-            />
-            I agree to the{" "}
-            <Link
-              to="/terms-and-conditions"
-              className="text-[#38BDF8] hover:underline ml-1"
-            >
-              Terms and Conditions
+          <div className="text-center text-black text-sm mt-6">
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#003cff] hover:underline">
+              Login here!
             </Link>
-          </label>
-          {errors.terms && (
-            <p className="text-red-500 text-xs mt-1">{errors.terms}</p>
-          )}
-        </div>
-
-        <button
-          onClick={handleSignUp}
-          disabled={isLoading}
-          className="w-full py-3 mt-6 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition"
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Signing up...</span>
-            </div>
-          ) : (
-            "Create an account"
-          )}
-        </button>
-
-        <div className="text-center text-white text-sm mt-6">
-          Already have an account?{" "}
-          <Link to="/login" className="text-[#38BDF8] hover:underline">
-            Login here!
-          </Link>
+          </div>
         </div>
       </div>
     </section>
