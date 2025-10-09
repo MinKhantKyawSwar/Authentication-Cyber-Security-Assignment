@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import LandingSection from "@/components/home/LandingSection";
 
@@ -8,6 +9,7 @@ const LandingPage = () => {
       <div className="space-x-5 space-y-4 flex justify-center">
         <LandingSection />
       </div>
+      <Footer />
     </>
   );
 };

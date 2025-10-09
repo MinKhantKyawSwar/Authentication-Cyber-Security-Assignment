@@ -15,9 +15,9 @@ const RecentSecurityEvents = ({ eventsLoading, isData }: Props) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.2 }}
-      className="md:row-span-2 p-[1px] rounded-xl bg-gradient-to-r from-[#ff85a2] via-[#ff5ebc] to-[#ff3ecb] h-full"
+      className="md:row-span-2 p-[1px]  border-t border-l border-dashed border-white h-full"
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg flex flex-col items-start w-full h-full">
+      <div className=" p-6 flex flex-col items-start w-full h-full">
         <div className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-[#32a852]" />
           <h2 className="text-xl font-semibold">Recent Security Events</h2>

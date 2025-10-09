@@ -8,9 +8,9 @@ const MultifactorStatus = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.08 }}
-      className="p-[1px] rounded-xl bg-gradient-to-r from-[#ff7f50] via-[#ffa500] to-[#ffd700]"
+      className="p-[1px] border-t border-dashed border-white h-full"
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg flex items-center justify-between  h-full">
+      <div className="p-6 flex items-center justify-between  h-full">
         <div className="flex items-center gap-3 h-full">
           <div className="p-3 rounded-lg bg-[#3a2e2e] text-[#ffb347]">
             <Shield className="h-6 w-6" />

@@ -11,9 +11,9 @@ const CountDown: React.FC<CountdownProps> = ({ countdown }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="p-[1px] rounded-xl bg-gradient-to-r from-[#0fdcdb] via-[#32a852] to-[#a0f0c0] h-full"
+      className="p-[1px] border-r border-dashed border-white h-full"
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg flex flex-col gap-4  h-full items-start">
+      <div className="p-6 flex flex-col gap-4  h-full items-start">
         <div className="flex items-start justify-around gap-4 mt-4">
           <div className="p-3 rounded-lg bg-[#2a2f3f] text-[#32a852]">
             <ShieldCheck className="h-6 w-6" />

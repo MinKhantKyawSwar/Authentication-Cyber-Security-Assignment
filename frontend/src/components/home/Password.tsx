@@ -7,9 +7,9 @@ const Password = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.05 }}
-      className="p-[1px] rounded-xl bg-gradient-to-r from-[#ff7f50] via-[#ffa500] to-[#ffd700]"
+      className="p-[1px]  border border-dashed border-white h-full"
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg flex items-start gap-4">
+      <div className=" p-6 flex items-start gap-4">
         <div className="p-3 rounded-lg bg-[#3a2e2e] text-[#ffb347]">
           <Lock className="h-6 w-6" />
         </div>

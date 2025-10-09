@@ -116,14 +116,24 @@ const RegisterPage: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate("/");
+  };
+
   return (
     <section
       className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${backgroundTwo})` }}
     >
       <div className="w-full max-w-lg p-6 md:p-8 bg-white/85 rounded-md shadow-md backdrop-blur-sm">
-        <div className="w-full max-w-md p-6 md:p-8">
+        <div className="w-full max-w-md p-6">
           <div className="text-center mb-6">
+            <button
+              onClick={handleBack}
+              className="hover:underline flex w-1/3 text-black"
+            >
+              ← Back
+            </button>
             <h1 className="text-3xl font-extrabold text-black">Authentic</h1>
             <p className="text-gray-500 mt-2 text-sm sm:text-base">
               Create your account

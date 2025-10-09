@@ -68,7 +68,7 @@ const LandingSection = () => {
       </div>
 
       {/* Security Grid Section */}
-      <div ref={gridSectionRef} className="w-full relative">
+      <div ref={gridSectionRef} className="w-full relative md:pt-40">
         <GridSection />
         <button
           onClick={scrollToWhy}

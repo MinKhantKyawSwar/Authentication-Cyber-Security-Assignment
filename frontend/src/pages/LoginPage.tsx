@@ -243,15 +243,25 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate("/");
+  };
+
   return (
     <section
       className="min-h-screen w-full font-inter flex flex-col md:flex-row items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${backgroundOne})` }}
     >
-      <div className="w-full flex items-center min-h-screen justify-center ">
+      <div className="w-full flex items-center min-h-screen flex-col justify-center ">
         <div className="w-full max-w-lg p-6 md:p-8 bg-white/85 rounded-md shadow-md backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
+            <button
+              onClick={handleBack}
+              className="mb-4 hover:underline flex w-1/3 text-black"
+            >
+              ← Back
+            </button>
             <h1 className="h-full text-3xl font-extrabold text-black">
               Authentic
             </h1>

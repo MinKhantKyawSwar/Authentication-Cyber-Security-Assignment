@@ -20,9 +20,9 @@ const AccessToken: React.FC<Props> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.04 }}
-      className="md:col-span-2 p-[1px] rounded-xl bg-gradient-to-r from-[#6a5acd] via-[#7b68ee] to-[#b19cd9]"
+      className="md:col-span-2 p-[1px]  border-t border-dashed border-white h-full"
     >
-      <div className="bg-[#1f1b2a] p-6 rounded-xl shadow-lg flex flex-col gap-3">
+      <div className=" p-6 flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-lg bg-[#2a2f3f] text-[#b19cd9]">
             <Lock className="h-6 w-6" />
