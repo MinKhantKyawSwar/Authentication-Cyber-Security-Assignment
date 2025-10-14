@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Icon } from "@iconify/react";
+import toast, { Toaster } from "react-hot-toast";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,11 +29,13 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    toast.success("Logout Successful!");
   };
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full backdrop-blur-2xl">
+        <Toaster />
         <div className="px-4 h-16 flex items-center justify-between mx-5">
           {/* Left side */}
           <div className="flex justify-between items-center space-x-4 sm:space-x-10">

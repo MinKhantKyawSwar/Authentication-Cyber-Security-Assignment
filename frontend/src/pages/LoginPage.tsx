@@ -7,7 +7,7 @@ import {
   useGoogleLoginMutation,
 } from "@/features/auth/authApi";
 import { setCredentials } from "@/features/auth/authSlice";
-import { toast } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { backgroundOne } from "@/assests";
 
 interface FormState {
@@ -274,7 +274,7 @@ const LoginPage: React.FC = () => {
           <button
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading}
-            className="w-full py-3 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg transition-transform duration-200 flex items-center justify-center gap-2"
           >
             <Icon icon="logos:google-icon" className="w-5 h-5" />
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
@@ -371,6 +371,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toaster />
     </section>
   );
 };

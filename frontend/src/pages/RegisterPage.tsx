@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
-import { useRegisterMutation } from "@/features/auth/authApi";
-import { toast } from "react-hot-toast";
+import {
+  useRegisterMutation,
+  useGoogleLoginMutation,
+} from "@/features/auth/authApi";
+import { setCredentials } from "@/features/auth/authSlice";
+import toast, { Toaster } from "react-hot-toast";
 import { backgroundTwo } from "@/assests";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 interface FormState {
   name: string;
@@ -36,7 +41,9 @@ const RegisterPage: React.FC = () => {
 
   const [errors, setErrors] = useState<ErrorState>({});
   const [register, { isLoading }] = useRegisterMutation();
-
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
+  const dispatch = useAppDispatch();
   // --- Validation ---
   const validateField = (
     name: keyof FormState,
@@ -116,6 +123,143 @@ const RegisterPage: React.FC = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    // @ts-expect-error Google SDK injected global
+    const google = window.google;
+    if (!google) {
+      toast.error("Google SDK not loaded");
+      return;
+    }
+
+    try {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+      // Prefer ID token flow; fallback to code flow if it fails
+      const startCodeFlow = () => {
+        try {
+          const codeClient = google.accounts.oauth2.initCodeClient({
+            client_id: clientId,
+            scope: "openid email profile",
+            ux_mode: "popup",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            callback: async (resp: any) => {
+              const authCode = resp?.code;
+              if (!authCode) {
+                toast.error("No auth code received");
+                return;
+              }
+              try {
+                const res = await googleLogin({ authCode }).unwrap();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                if ((res as any).accessToken) {
+                  dispatch(
+                    setCredentials({
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      user: (res as any).user,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      token: (res as any).accessToken,
+                    }),
+                  );
+                  localStorage.setItem(
+                    "auth",
+                    JSON.stringify({
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      user: (res as any).user,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      token: (res as any).accessToken,
+                    }),
+                  );
+                  toast.success("Signed in with Google");
+                  navigate("/");
+                } else {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const emailParam = (res as any)?.pendingUser?.email || "";
+                  if (emailParam)
+                    sessionStorage.setItem("pendingEmail", emailParam);
+                  toast.success("OTP sent to your email");
+                  navigate(`/otp?email=${encodeURIComponent(emailParam)}`);
+                }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } catch (err: any) {
+                toast.error(
+                  err?.data?.message ||
+                    err?.data?.detail ||
+                    "Google code flow failed",
+                );
+              }
+            },
+          });
+          codeClient.requestCode();
+        } catch (err) {
+          toast.error("Google code flow failed to start");
+        }
+      };
+
+      let idFlowHandled = false;
+      google.accounts.id.initialize({
+        client_id: clientId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        callback: async (response: any) => {
+          const idToken = response?.credential as string | undefined;
+          if (!idToken) {
+            startCodeFlow();
+            return;
+          }
+          try {
+            const res = await googleLogin({ idToken }).unwrap();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((res as any).accessToken) {
+              dispatch(
+                setCredentials({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  user: (res as any).user,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  token: (res as any).accessToken,
+                }),
+              );
+              localStorage.setItem(
+                "auth",
+                JSON.stringify({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  user: (res as any).user,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  token: (res as any).accessToken,
+                }),
+              );
+              toast.success("Signed in with Google");
+              navigate("/");
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const emailParam = (res as any)?.pendingUser?.email || "";
+              if (emailParam)
+                sessionStorage.setItem("pendingEmail", emailParam);
+              toast.success("OTP sent to your email");
+              navigate(`/otp?email=${encodeURIComponent(emailParam)}`);
+            }
+            idFlowHandled = true;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (err: any) {
+            // If ID token verification fails (e.g., audience mismatch), fallback
+            toast.error(
+              err?.data?.message ||
+                err?.data?.detail ||
+                "Google ID flow failed",
+            );
+            startCodeFlow();
+          }
+        },
+      });
+      // Trigger prompt; if the browser blocks it or no credential arrives, fallback after short delay
+      google.accounts.id.prompt((notification: unknown) => {
+        // If prompt is not displayed or skipped, fallback
+        setTimeout(() => {
+          if (!idFlowHandled) startCodeFlow();
+        }, 1200);
+      });
+    } catch (e) {
+      toast.error("Google sign-in failed to initialize");
+    }
+  };
+
   const handleBack = () => {
     navigate("/");
   };
@@ -139,7 +283,22 @@ const RegisterPage: React.FC = () => {
               Create your account
             </p>
           </div>
+          {/* Google Login */}
+          <button
+            onClick={handleGoogleLogin}
+            disabled={isGoogleLoading}
+            className="w-full py-3 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg transition-transform duration-200 flex items-center justify-center gap-2"
+          >
+            <Icon icon="logos:google-icon" className="w-5 h-5" />
+            {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+          </button>
 
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow h-px bg-gray-700" />
+            <span className="mx-3 text-gray-400 text-xs">OR</span>
+            <div className="flex-grow h-px bg-gray-700" />
+          </div>
           <div className="space-y-4">
             {["name", "email", "password", "confirmPassword"].map((field) => {
               const isPassword =
@@ -241,6 +400,7 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toaster />
     </section>
   );
 };

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { setCredentials } from "@/features/auth/authSlice";
 import { useVerifyOtpMutation } from "@/features/auth/authApi";
+import toast, { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 
 const OtpPage: React.FC = () => {
@@ -39,8 +40,9 @@ const OtpPage: React.FC = () => {
         JSON.stringify({ user: res.user, token: res.accessToken }),
       );
       navigate("/");
+      toast.success("Login Successful!");
     } catch (e) {
-      alert("Invalid or expired OTP");
+      toast.error("Invalid or expired OTP");
     }
   };
 
@@ -98,9 +100,9 @@ const OtpPage: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      alert("OTP resent");
+      toast.success("OTP resent");
     } catch (err) {
-      alert("Failed to resend OTP");
+      toast.error("Failed to resend OTP");
     }
   };
 
@@ -154,6 +156,7 @@ const OtpPage: React.FC = () => {
           </button>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

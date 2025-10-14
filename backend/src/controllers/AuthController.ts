@@ -223,18 +223,18 @@ export default class AuthController {
           email,
           "Your One-Time Password",
           `
-  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
-    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
-    <p>Hi ${user.name || ""},</p>
-    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
-    <p style="text-align: center; margin: 30px 0;">
-      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
-    </p>
-    <p>If you did not request this, please ignore this email.</p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
-  </div>
-  `
+            <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+              <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+              <p>Hi ${user.name || ""},</p>
+              <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+              <p style="text-align: center; margin: 30px 0;">
+                <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+              </p>
+              <p>If you did not request this, please ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+              <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+            </div>
+            `
         );
       } catch (mailErr) {
         console.warn("Google login OTP email failed:", mailErr);
@@ -530,18 +530,18 @@ export default class AuthController {
           user.email,
           "Your One-Time Password",
           `
-  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
-    <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
-    <p>Hi ${user.name || ""},</p>
-    <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
-    <p style="text-align: center; margin: 30px 0;">
-      <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
-    </p>
-    <p>If you did not request this, please ignore this email.</p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-    <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
-  </div>
-  `
+            <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+              <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+              <p>Hi ${user.name || ""},</p>
+              <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+              <p style="text-align: center; margin: 30px 0;">
+                <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+              </p>
+              <p>If you did not request this, please ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+              <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+            </div>
+            `
         );
       } catch (mailErr) {
         console.warn("Resend OTP email failed:", mailErr);
