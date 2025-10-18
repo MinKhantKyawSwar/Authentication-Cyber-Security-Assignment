@@ -9,13 +9,13 @@ import { setCredentials } from "@/features/auth/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { backgroundTwo } from "@/assests";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface FormState {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
-  terms: boolean;
 }
 
 interface ErrorState {
@@ -23,20 +23,19 @@ interface ErrorState {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  terms?: string;
 }
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>("");
 
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    terms: false,
   });
 
   const [errors, setErrors] = useState<ErrorState>({});
@@ -44,6 +43,7 @@ const RegisterPage: React.FC = () => {
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
   const dispatch = useAppDispatch();
+
   // --- Validation ---
   const validateField = (
     name: keyof FormState,
@@ -83,10 +83,6 @@ const RegisterPage: React.FC = () => {
         if ((value as string) !== form.password)
           return "Passwords do not match!";
         break;
-
-      case "terms":
-        if (!value) return "You must accept the terms and conditions!";
-        break;
     }
     return undefined;
   };
@@ -97,7 +93,6 @@ const RegisterPage: React.FC = () => {
       email: validateField("email", form.email),
       password: validateField("password", form.password),
       confirmPassword: validateField("confirmPassword", form.confirmPassword),
-      terms: validateField("terms", form.terms),
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
@@ -106,12 +101,17 @@ const RegisterPage: React.FC = () => {
   // --- Handle Register ---
   const handleSignUp = async () => {
     if (!validateAllFields()) return;
+    if (!captchaToken) {
+      toast.error("Please verify that you are not a robot.");
+      return;
+    }
 
     try {
       await register({
         name: form.name,
         email: form.email,
         password: form.password,
+        captchaToken,
       }).unwrap();
 
       toast.success("Registration successful!");
@@ -278,8 +278,8 @@ const RegisterPage: React.FC = () => {
             >
               ← Back
             </button>
-            <h1 className="text-3xl font-extrabold text-black">Authentic</h1>
-            <p className="text-gray-500 mt-2 text-sm sm:text-base">
+            <h1 className="text-2xl font-extrabold text-black">Authentic</h1>
+            <p className="text-gray-500 text-sm sm:text-base">
               Create your account
             </p>
           </div>
@@ -287,7 +287,7 @@ const RegisterPage: React.FC = () => {
           <button
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading}
-            className="w-full py-3 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg transition-transform duration-200 flex items-center justify-center gap-2"
+            className="w-full py-2 rounded-lg bg-white border border-gray-200 text-black font-semibold text-base shadow hover:shadow-lg transition-transform duration-200 flex items-center justify-center gap-2"
           >
             <Icon icon="logos:google-icon" className="w-5 h-5" />
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
@@ -356,27 +356,12 @@ const RegisterPage: React.FC = () => {
             })}
           </div>
 
-          <div className="flex flex-col mt-4 text-sm">
-            <label className="flex items-center text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.terms}
-                onChange={(e) => setForm({ ...form, terms: e.target.checked })}
-                className="mr-2"
-              />
-              I agree to the{" "}
-              <Link
-                to="/terms-and-conditions"
-                className="text-[#003cff] hover:underline ml-1"
-              >
-                Terms and Conditions
-              </Link>
-            </label>
-            {errors.terms && (
-              <p className="text-red-500 text-xs mt-1">{errors.terms}</p>
-            )}
+          <div className="mt-4 w-full flex items-center justify-center">
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_SITEKEY}
+              onChange={(token) => setCaptchaToken(token)}
+            />
           </div>
-
           <button
             onClick={handleSignUp}
             disabled={isLoading}

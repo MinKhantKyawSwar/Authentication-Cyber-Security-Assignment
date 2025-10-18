@@ -8,6 +8,7 @@ import RefreshTokenModel from "../models/RefreshToken";
 import { OAuth2Client } from "google-auth-library";
 import { mailSender } from "../utils/mail";
 import OtpModel from "../models/Otp";
+import axios from "axios";
 
 export default class AuthController {
   private googleClient?: OAuth2Client;
@@ -24,7 +25,19 @@ export default class AuthController {
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
 
-    const { name, email, password } = req.body;
+    const { captchaToken, name, email, password } = req.body;
+    const secret = process.env.RECAPCHA_BACKEND;
+
+    if (!captchaToken) {
+      return res.status(400).json({ message: "Missing reCAPTCHA token" });
+    }
+    const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${captchaToken}`;
+    const { data } = await axios.post(verifyUrl);
+
+    if (!data.success) {
+      return res.status(400).json({ message: "reCAPTCHA verification failed" });
+    }
+
     const existing = await UserModel.findOne({ email });
     if (existing) return res.status(409).json({ message: "User exists" });
 
