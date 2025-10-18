@@ -39,8 +39,14 @@ const OtpPage: React.FC = () => {
         "auth",
         JSON.stringify({ user: res.user, token: res.accessToken }),
       );
-      navigate("/");
-      toast.success("Login Successful!");
+      const source = params.get("source");
+      if (source === "register") {
+        toast.success("OTP verified! Set up face scan.");
+        navigate("/face-scan-setup");
+      } else {
+        toast.success("Login Successful!");
+        navigate("/");
+      }
     } catch (e) {
       toast.error("Invalid or expired OTP");
     }

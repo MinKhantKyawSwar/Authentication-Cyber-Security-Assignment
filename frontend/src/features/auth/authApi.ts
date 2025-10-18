@@ -1,5 +1,12 @@
 import { baseApi } from "@/app/baseApi";
-import { LoginRequest, LoginResponse, RegisterRequest } from "@/types/auth";
+import { 
+  LoginRequest, 
+  LoginResponse, 
+  RegisterRequest, 
+  FaceScanLoginRequest,
+  FaceScanSetupRequest,
+  FaceScanSetupResponse
+} from "@/types/auth";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,7 +17,11 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
-    register: builder.mutation<void, RegisterRequest>({
+    register: builder.mutation<{
+      message: string;
+      user: { id: string; name: string; email: string };
+      accessToken: string;
+    }, RegisterRequest>({
       query: (userData) => ({
         url: "/auth/register",
         method: "POST",
@@ -49,6 +60,20 @@ export const authApi = baseApi.injectEndpoints({
         }),
       },
     ),
+    faceScanLogin: builder.mutation<LoginResponse, FaceScanLoginRequest>({
+      query: (credentials) => ({
+        url: "/auth/face-scan-login",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    setupFaceScan: builder.mutation<FaceScanSetupResponse, FaceScanSetupRequest>({
+      query: (data) => ({
+        url: "/auth/setup-face-scan",
+        method: "POST",
+        body: data,
+      }),
+    }),
     logoutServer: builder.mutation<void, { userId: string }>({
       query: (body) => ({ url: "/auth/logout", method: "POST", body }),
     }),
@@ -104,4 +129,6 @@ export const {
   useListSessionsQuery,
   useRevokeSessionMutation,
   useSecurityAuditsQuery,
+  useFaceScanLoginMutation,
+  useSetupFaceScanMutation,
 } = authApi;

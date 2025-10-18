@@ -6,6 +6,8 @@ export interface IUser extends Document {
   passwordHash?: string;
   provider?: "local" | "google";
   googleId?: string;
+  faceScanEnabled?: boolean;
+  faceScanData?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -14,6 +16,8 @@ const userSchema = new Schema<IUser>({
   passwordHash: { type: String, required: false },
   provider: { type: String, enum: ["local", "google"], default: "local" },
   googleId: { type: String, required: false },
+  faceScanEnabled: { type: Boolean, default: false },
+  faceScanData: { type: String, required: false },
 });
 
 const UserModel = mongoose.model<IUser>("User", userSchema);

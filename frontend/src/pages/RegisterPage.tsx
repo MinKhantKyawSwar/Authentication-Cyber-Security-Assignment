@@ -107,15 +107,17 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
-      await register({
+      const response = await register({
         name: form.name,
         email: form.email,
         password: form.password,
         captchaToken,
       }).unwrap();
 
-      toast.success("Registration successful!");
-      navigate("/login");
+      // After registration, require OTP before login and face scan
+      sessionStorage.setItem("pendingEmail", form.email);
+      toast.success("OTP sent to your email");
+      navigate(`/otp?email=${encodeURIComponent(form.email)}&source=register`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Register failed:", err);

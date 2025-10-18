@@ -9,6 +9,7 @@ import {
 import { setCredentials } from "@/features/auth/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { backgroundOne } from "@/assests";
+import FaceScanLogin from "@/components/FaceScanLogin";
 
 interface FormState {
   email: string;
@@ -22,10 +23,28 @@ interface ErrorState {
 
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showFaceScan, setShowFaceScan] = useState(false);
   const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<ErrorState>({});
-
+  
+  // Add a function to toggle face scan login
+  const toggleFaceScan = (email : string) => {
+    console.log(email)
+    setShowFaceScan(!showFaceScan);
+  };
   const navigate = useNavigate();
+  
+  // Check if user came from registration page and prevent going back
+  React.useEffect(() => {
+    const auth = localStorage.getItem('auth');
+    if (auth) {
+      const { user, token } = JSON.parse(auth);
+      if (user && token) {
+        navigate('/');
+      }
+    }
+  }, [navigate]);
+
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
   const [googleLogin, { isLoading: isGoogleLoading }] =
@@ -362,9 +381,45 @@ const LoginPage: React.FC = () => {
             )}
           </button>
 
+          <button
+              onClick={()=>toggleFaceScan(form.email)}
+              disabled={isLoading }
+              className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-base shadow transition flex items-center justify-center"
+            >
+              <Icon icon="mdi:face-recognition" className="mr-2 h-5 w-5" />
+              {showFaceScan ? "Hide Face Scan" : "Login with Face Scan"}
+            </button>
+
+          {showFaceScan && form.email && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="max-w-md w-full mx-4">
+                <FaceScanLogin 
+                  email={form.email} 
+                  onCancel={() => setShowFaceScan(false)} 
+                />
+              </div>
+            </div>
+          )}
+          
+          {showFaceScan && !form.email && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="max-w-md w-full mx-4 bg-white p-6 rounded-lg">
+                <div className="p-4 bg-yellow-100 text-yellow-800 rounded-md">
+                  Please enter your email address first to use face scan login.
+                </div>
+                <button
+                  onClick={() => setShowFaceScan(false)}
+                  className="w-full mt-4 py-2 bg-gray-900 rounded-md"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Sign Up Link */}
           <div className="text-center text-black text-sm mt-6">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link to="/sign-up" className="text-[#003cff] hover:underline">
               Sign Up
             </Link>

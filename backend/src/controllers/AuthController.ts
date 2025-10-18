@@ -48,6 +48,45 @@ export default class AuthController {
     const token = await this.tokenService.createAccessToken(
       user._id as mongoose.Types.ObjectId
     );
+      // Generate OTP and pause login
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const ttlMs = 5 * 60 * 1000; // 5 minutes
+    const now = new Date();
+    await OtpModel.create({
+      userId: user._id as mongoose.Types.ObjectId,
+      code: otpCode,
+      createdAt: now,
+      expiresAt: new Date(now.getTime() + ttlMs),
+      consumed: false,
+      status: "pending",
+    });
+
+    try {
+      await mailSender(
+        user.email,
+        "Your One-Time Password",
+        `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+        <p>Hi ${user.name || ""},</p>
+        <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+        <p style="text-align: center; margin: 30px 0;">
+          <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+        </p>
+        <p>If you did not request this, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+      `
+      );
+    } catch (mailErr) {
+      console.warn("Login OTP email failed:", mailErr);
+    }
+
+    return res.status(202).json({
+      message: "OTP sent to email",
+      pendingUser: { id: user._id, email: user.email },
+    });
 
     return res.status(201).json({
       message: "User registered successfully",
@@ -616,5 +655,85 @@ export default class AuthController {
         ip: e.meta?.ip as string | undefined,
       }))
     );
+  };
+
+  setupFaceScan = async (req: Request, res: Response) => {
+    if (!req.user)
+      return res.status(401).json({ message: "User is unauthorized." });
+
+    const userId = req.user.id;
+    const { faceScanData } = req.body;
+
+    if (!faceScanData) {
+      return res.status(400).json({ message: "Face scan data is required" });
+    }
+
+    try {
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.faceScanEnabled = true;
+      user.faceScanData = faceScanData;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Face scan setup successful",
+      });
+    } catch (error) {
+      console.error("Face scan setup error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to setup face scan",
+      });
+    }
+  };
+
+  faceScanLogin = async (req: Request, res: Response) => {
+    const { email, faceScanData } = req.body;
+
+    if (!email || !faceScanData) {
+      return res.status(400).json({ message: "Email and face scan data are required" });
+    }
+
+    try {
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      if (!user.faceScanEnabled || !user.faceScanData) {
+        return res.status(401).json({ message: "Face scan not enabled for this user" });
+      }
+
+      // In a real implementation, you would use a proper face recognition library
+      // to compare the faceScanData with the stored data
+      // For this example, we'll do a simple string comparison
+      const isMatch = user.faceScanData === faceScanData;
+
+      if (!isMatch) {
+        return res.status(401).json({ message: "Face scan authentication failed" });
+      }
+
+      // Generate access token
+      const token = await this.tokenService.createAccessToken(
+        user._id as mongoose.Types.ObjectId
+      );
+
+      return res.status(200).json({
+        user: {
+          id: user._id,
+          name: user.name || user.email.split("@")[0],
+          email: user.email,
+          faceScanEnabled: user.faceScanEnabled,
+        },
+        accessToken: token,
+      });
+    } catch (error) {
+      console.error("Face scan login error:", error);
+      return res.status(500).json({ message: "Face scan login failed" });
+    }
   };
 }

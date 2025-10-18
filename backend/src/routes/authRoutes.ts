@@ -28,6 +28,14 @@ export default (authController: AuthController, tokenService: TokenService) => {
     authMiddleware(tokenService),
     authController.securityAudit
   );
+  
+  // Face scan authentication routes
+  router.post(
+    "/setup-face-scan", 
+    authMiddleware(tokenService), 
+    authController.setupFaceScan
+  );
+  router.post("/face-scan-login", authController.faceScanLogin);
 
   return router;
 };
