@@ -46,13 +46,13 @@ const LandingSection = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-6 md:mt-10 w-full sm:w-auto">
           <Link
             to="/sign-up"
-            className="w-full sm:w-auto rounded-lg px-6 py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 to-pink-500 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-center"
+            className="w-full sm:w-auto rounded-lg px-6 py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 to-pink-500 shadow-md transition-all duration-300 text-center"
           >
             Sign Up
           </Link>
           <Link
             to="/login"
-            className="w-full sm:w-auto rounded-lg px-6 py-3 font-semibold text-black bg-white border hover:bg-black hover:text-white hover:shadow-md transition-all duration-300 text-center"
+            className="w-full sm:w-auto rounded-lg px-6 py-3 font-semibold text-black bg-white border  hover:shadow-md transition-all duration-300 text-center"
           >
             Login
           </Link>
