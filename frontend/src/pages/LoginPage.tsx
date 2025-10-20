@@ -9,6 +9,7 @@ import {
 import { setCredentials } from "@/features/auth/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { backgroundOne } from "@/assests";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface FormState {
   email: string;
@@ -24,6 +25,9 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<ErrorState>({});
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const [attempts, setAttempts] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -70,39 +74,52 @@ const LoginPage: React.FC = () => {
       const res = await login({
         email: form.email,
         password: form.password,
+        recaptchaToken: captchaToken || "",
+        loginAttempts: attempts,
       }).unwrap();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((res as any).accessToken) {
+
+      if (res?.accessToken) {
         dispatch(
           setCredentials({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            user: (res as any).user,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            token: (res as any).accessToken,
+            user: res.user,
+            token: res.accessToken,
           }),
         );
         localStorage.setItem(
           "auth",
           JSON.stringify({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            user: (res as any).user,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            token: (res as any).accessToken,
+            user: res.user,
+            token: res.accessToken,
           }),
         );
         toast.success("Welcome back!");
+        setShowCaptcha(false);
+        setAttempts(0);
         navigate("/");
       } else {
-        // OTP pending
         const emailToUse = form.email;
         sessionStorage.setItem("pendingEmail", emailToUse);
         toast.success("OTP sent to your email");
         navigate(`/otp?email=${encodeURIComponent(emailToUse)}`);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (err) {
+      setAttempts((prev) => {
+        const next = prev + 1;
+        console.log("Failed attempts:", next);
+        if (next >= 3) setShowCaptcha(true);
+        return next;
+      });
+
+      if (err.response?.data?.error === "reCAPTCHA required") {
+        setShowCaptcha(true);
+      }
+
       console.error("Login failed:", err);
-      toast.error(err?.data?.message || "Invalid credentials");
+      if (attempts % 3 && !captchaToken) {
+        toast.error("Please attempt Recaptcha.");
+      } else {
+        toast.error(err?.response?.data?.message || "Invalid credentials");
+      }
     }
   };
 
@@ -172,6 +189,8 @@ const LoginPage: React.FC = () => {
             },
           });
           codeClient.requestCode();
+          setAttempts(0);
+          setShowCaptcha(false);
         } catch (err) {
           toast.error("Google code flow failed to start");
         }
@@ -337,20 +356,49 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Forgot Password */}
-          <div className="mb-6 text-right">
+          {/* <div className="mb-6 text-right">
             <Link
               to="/forgot-password"
               className="text-xs sm:text-sm text-[#003cff] hover:underline"
             >
               Forgot password?
             </Link>
-          </div>
+          </div> */}
+          {attempts >= 3 && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-sm text-center relative">
+                <h2 className="text-lg font-semibold mb-3 text-gray-800">
+                  Verify you’re not a robot 🤖
+                </h2>
+                <ReCAPTCHA
+                  sitekey={import.meta.env.VITE_SITEKEY}
+                  onChange={(token) => {
+                    setCaptchaToken(token);
+                    if (token) {
+                      setAttempts(0); // reset attempts when captcha solved
+                      toast.success("reCAPTCHA verified!");
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    setAttempts(0);
+                    setCaptchaToken(null);
+                  }}
+                  className="absolute top-2 right-3 text-gray-500 hover:text-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Login Button */}
+
           <button
             onClick={handleLogin}
             disabled={isLoading}
-            className="w-full py-3 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full mt-6 py-3 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow transition-all duration-200 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

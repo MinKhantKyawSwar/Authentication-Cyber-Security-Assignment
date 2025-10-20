@@ -12,6 +12,8 @@ export interface LoginResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+  recaptchaToken?: string;
+  loginAttempts: number;
 }
 
 export interface RegisterRequest {

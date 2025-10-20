@@ -61,56 +61,92 @@ export default class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    const user = await UserModel.findOne({ email });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
-
-    if (!user.passwordHash) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const ok = await argon2.verify(user.passwordHash, password);
-    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
-
-    // Generate OTP and pause login
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const ttlMs = 5 * 60 * 1000; // 5 minutes
-    const now = new Date();
-    await OtpModel.create({
-      userId: user._id as mongoose.Types.ObjectId,
-      code: otpCode,
-      createdAt: now,
-      expiresAt: new Date(now.getTime() + ttlMs),
-      consumed: false,
-      status: "pending",
-    });
-
     try {
-      await mailSender(
-        user.email,
-        "Your One-Time Password",
-        `
-      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
-        <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
-        <p>Hi ${user.name || ""},</p>
-        <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
-        <p style="text-align: center; margin: 30px 0;">
-          <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
-        </p>
-        <p>If you did not request this, please ignore this email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
-      </div>
-      `
-      );
-    } catch (mailErr) {
-      console.warn("Login OTP email failed:", mailErr);
-    }
+      const { email, password, recaptchaToken, loginAttempts } = req.body;
 
-    return res.status(202).json({
-      message: "OTP sent to email",
-      pendingUser: { id: user._id, email: user.email },
-    });
+      // Default attempts to 0 if undefined or invalid
+      const attempts = Number(loginAttempts) || 0;
+      const secret = process.env.RECAPTCHA_BACKEND;
+
+      // Require reCAPTCHA after 3 or more failed attempts
+      if (attempts >= 3) {
+        if (!recaptchaToken) {
+          return res.status(400).json({ error: "reCAPTCHA required" });
+        }
+
+        // Verify reCAPTCHA
+        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${recaptchaToken}`;
+        const { data } = await axios.post(verifyUrl);
+
+        if (!data.success) {
+          return res
+            .status(400)
+            .json({ message: "reCAPTCHA verification failed" });
+        }
+      }
+
+      // Check if user exists
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      if (!user.passwordHash) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Verify password
+      const isPasswordCorrect = await argon2.verify(
+        user.passwordHash,
+        password
+      );
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Generate OTP and pause login
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const ttlMs = 5 * 60 * 1000; // 5 minutes
+      const now = new Date();
+
+      await OtpModel.create({
+        userId: user._id as mongoose.Types.ObjectId,
+        code: otpCode,
+        createdAt: now,
+        expiresAt: new Date(now.getTime() + ttlMs),
+        consumed: false,
+        status: "pending",
+      });
+
+      try {
+        await mailSender(
+          user.email,
+          "Your One-Time Password",
+          `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+          <h2 style="color: #4a90e2; text-align: center;">Your One-Time Password (OTP)</h2>
+          <p>Hi ${user.name || ""},</p>
+          <p>Use the following OTP to complete your authentication process. It expires in <b>5 minutes</b>:</p>
+          <p style="text-align: center; margin: 30px 0;">
+            <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 3px;">${otpCode}</span>
+          </p>
+          <p>If you did not request this, please ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+        </div>
+        `
+        );
+      } catch (mailErr) {
+        console.warn("Login OTP email failed:", mailErr);
+      }
+
+      return res.status(202).json({
+        message: "OTP sent to email",
+        pendingUser: { id: user._id, email: user.email },
+      });
+    } catch (err) {
+      console.error("Login error:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   };
 
   whoami = async (req: Request, res: Response) => {
