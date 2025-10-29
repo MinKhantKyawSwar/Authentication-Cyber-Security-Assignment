@@ -8,7 +8,7 @@ import {
 import { decodeJwtExpiryMs } from "@/hooks/use-token-countdown";
 import { useRefreshMutation } from "@/features/auth/authApi";
 
-const CHECK_INTERVAL_MS = 5000;
+const CHECK_INTERVAL_MS = 5000; // check every 5 seconds
 
 export default function AuthExpiryGuard() {
   const dispatch = useDispatch();
@@ -30,15 +30,12 @@ export default function AuthExpiryGuard() {
       }
     }
 
-    function stopScheduling() {
-      clearTimers();
-    }
-
     async function tryRefresh(): Promise<boolean> {
       const storedAuth = localStorage.getItem("auth");
       const parsed = storedAuth ? JSON.parse(storedAuth) : {};
       const userId = currentUser?.id ?? parsed?.user?.id;
       if (!userId) return false;
+
       try {
         const res = await refresh({ userId }).unwrap();
         const newAuth = {
@@ -46,22 +43,25 @@ export default function AuthExpiryGuard() {
           token: res.accessToken,
         };
         localStorage.setItem("auth", JSON.stringify(newAuth));
-        // Update Redux credentials so UI and headers reflect new token
+
         dispatch(
           setCredentials({
             user: newAuth.user,
             token: newAuth.token,
           }),
         );
+
         return true;
       } catch {
+        console.warn("Token refresh failed.");
         return false;
       }
     }
 
     function scheduleFromToken() {
       clearTimers();
-      // Prefer Redux state, fallback to localStorage
+
+      // Prefer Redux token, fallback to localStorage
       let token: string | undefined | null = accessToken;
       if (!token) {
         const storedAuth = localStorage.getItem("auth");
@@ -69,54 +69,65 @@ export default function AuthExpiryGuard() {
           ? (JSON.parse(storedAuth).token as string | undefined)
           : undefined;
       }
+
       const expiryMs = decodeJwtExpiryMs(token ?? null);
       const now = Date.now();
+
+      // If no expiry or already expired → refresh immediately
       if (!expiryMs || expiryMs <= now) {
-        // Token missing or expired; attempt refresh first
         void (async () => {
           const ok = await tryRefresh();
-          if (!ok) stopScheduling();
-          else scheduleFromToken();
+          if (ok) scheduleFromToken();
+          else {
+            // Retry after a short delay (in case of network issues)
+            timeoutRef.current = window.setTimeout(scheduleFromToken, 10000);
+          }
         })();
         return;
       }
+
       const wait = Math.max(0, expiryMs - now);
+      console.debug("Next token refresh scheduled in", wait / 1000, "seconds");
+
+      // Schedule a refresh exactly when token expires
       timeoutRef.current = window.setTimeout(async () => {
         const ok = await tryRefresh();
-
-        if (!ok) stopScheduling();
-        else scheduleFromToken();
+        if (ok) scheduleFromToken();
+        else timeoutRef.current = window.setTimeout(scheduleFromToken, 10000);
       }, wait);
-      // Additionally, poll in case localStorage changes without reload (refresh, cross-tab)
+
+      // Periodically check for token expiry or cross-tab changes
       intervalRef.current = window.setInterval(() => {
-        const updated = localStorage.getItem("auth");
-        const t =
-          accessToken ??
-          (updated
-            ? (JSON.parse(updated).token as string | undefined)
-            : undefined);
-        const e = decodeJwtExpiryMs(t ?? null);
-        if (!e || e <= Date.now()) {
-          // Will be handled by timeout or next scheduling; no-op here
+        const updatedAuth = localStorage.getItem("auth");
+        const updatedToken = updatedAuth
+          ? (JSON.parse(updatedAuth).token as string | undefined)
+          : undefined;
+        const exp = decodeJwtExpiryMs(updatedToken ?? null);
+        if (!exp || exp <= Date.now()) {
+          console.debug("Detected expired token, refreshing...");
+          void (async () => {
+            const ok = await tryRefresh();
+            if (ok) scheduleFromToken();
+          })();
         }
       }, CHECK_INTERVAL_MS);
     }
 
-    scheduleFromToken();
-
+    // React to localStorage changes (multi-tab sync)
     function onStorage(e: StorageEvent) {
       if (e.key === "auth") {
         scheduleFromToken();
       }
     }
+
+    scheduleFromToken();
     window.addEventListener("storage", onStorage);
+
     return () => {
       window.removeEventListener("storage", onStorage);
       clearTimers();
     };
-    // Reschedule when access token or user changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, accessToken, currentUser]);
+  }, [dispatch, accessToken, currentUser, refresh]);
 
   return null;
 }

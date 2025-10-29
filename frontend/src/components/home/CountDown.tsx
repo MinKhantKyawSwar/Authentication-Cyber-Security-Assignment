@@ -6,11 +6,6 @@ type CountdownProps = {
   countdown: Countdown;
 };
 const CountDown: React.FC<CountdownProps> = ({ countdown }) => {
-  useEffect(() => {
-    if (countdown.expired) {
-      window.location.reload();
-    }
-  }, [countdown]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -27,7 +22,12 @@ const CountDown: React.FC<CountdownProps> = ({ countdown }) => {
             <h2 className="text-xl font-semibold">Token Status</h2>
             <p className="text-gray-400 mt-1">
               {countdown.expired ? (
-                <span className="text-red-400">Expired</span>
+                <>
+                  <p className="text-red-400">Expired</p>
+                  <span className="text-red-400 text-sm">
+                    Refreshing~ Please wait...
+                  </span>
+                </>
               ) : (
                 <span>
                   Refresh in{" "}
