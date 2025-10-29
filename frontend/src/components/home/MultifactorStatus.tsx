@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Shield } from "lucide-react";
 
@@ -8,7 +7,7 @@ const MultifactorStatus = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.08 }}
-      className="p-[1px] border-t border-dashed border-white h-full"
+      className="p-[1px] border-t border-r border-b border-white h-full"
     >
       <div className="p-6 flex items-center justify-between  h-full">
         <div className="flex items-center gap-3 h-full">

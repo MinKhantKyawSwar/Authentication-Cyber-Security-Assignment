@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import { Countdown } from "@/hooks/use-token-countdown";
@@ -6,12 +6,17 @@ type CountdownProps = {
   countdown: Countdown;
 };
 const CountDown: React.FC<CountdownProps> = ({ countdown }) => {
+  useEffect(() => {
+    if (countdown.expired) {
+      window.location.reload();
+    }
+  }, [countdown]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="p-[1px] border-r border-dashed border-white h-full"
+      className="p-[1px] border-r border-white h-full"
     >
       <div className="p-6 flex flex-col gap-4  h-full items-start">
         <div className="flex items-start justify-around gap-4 mt-4">

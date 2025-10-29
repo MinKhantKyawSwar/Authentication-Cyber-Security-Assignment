@@ -15,7 +15,7 @@ const RecentSecurityEvents = ({ eventsLoading, isData }: Props) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.2 }}
-      className="md:row-span-2 p-[1px]  border-t border-l border-dashed border-white h-full"
+      className="md:row-span-2 p-[1px]  border-t border-white h-full"
     >
       <div className=" p-6 flex flex-col items-start w-full h-full">
         <div className="flex items-center gap-2">
@@ -25,7 +25,7 @@ const RecentSecurityEvents = ({ eventsLoading, isData }: Props) => {
         <div className="mt-4 w-full">
           {eventsLoading && (
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
+              {Array.from({ length: 10 }).map((_, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between gap-4"
@@ -43,7 +43,7 @@ const RecentSecurityEvents = ({ eventsLoading, isData }: Props) => {
           )}
           {!eventsLoading && isData && (
             <ul className="text-gray-300 text-sm space-y-3 h-20">
-              {isData.slice(0, 7).map((e, idx) => (
+              {isData.slice(0, 5).map((e, idx) => (
                 <li key={idx} className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <span

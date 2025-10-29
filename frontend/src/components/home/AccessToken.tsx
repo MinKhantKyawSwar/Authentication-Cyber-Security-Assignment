@@ -20,7 +20,7 @@ const AccessToken: React.FC<Props> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.04 }}
-      className="md:col-span-2 p-[1px]  border-t border-dashed border-white h-full"
+      className="md:col-span-2 p-[1px]  border-r border-white h-full"
     >
       <div className=" p-6 flex flex-col gap-3">
         <div className="flex items-center gap-3">
