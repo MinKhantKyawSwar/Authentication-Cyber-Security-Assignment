@@ -29,7 +29,7 @@ const GridSection = () => {
         {/* Background Glow */}
 
         {/* Content */}
-        <h1 className="relative z-10 text-3xl md:h-[60px] sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-pink-500 to-rose-500 text-center">
+        <h1 className="relative z-10 text-3xl md:h-[60px] sm:text-4xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-pink-500 to-rose-500 text-center">
           Security isn't a maybe.
         </h1>
         <p className="relative z-10 mt-4 text-base sm:text-lg md:text-lg font-medium text-neutral-700 text-center">
