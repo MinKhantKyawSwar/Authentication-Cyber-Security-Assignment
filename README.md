@@ -16,7 +16,7 @@ Ensure you have the following installed on your system:
 
 ## 1. Clone the Repository
 
-Clone the project repository to your local machine.
+Clone the project repository to your local machine. I have already provided this with code file so you can skip this one.
 
 ```bash
 git clone https://github.com/MinKhantKyawSwar/Authentication-Cyber-Security-Assignment.git
@@ -35,11 +35,13 @@ cd backend
 npm install
 ```
 
+### Database setup
+
+for the
+
 ### Configure Environment Variables
 
-Create a file named `.env` in the `backend/` directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.).
-
-> Note: Replace the placeholder values with actual secure keys.
+Create a file named `.env` in the `backend/` directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.). Since this one is also provided in the zip file, you can skip it too.
 
 ### Start the Backend Development Server
 
