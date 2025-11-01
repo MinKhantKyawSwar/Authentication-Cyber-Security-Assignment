@@ -37,11 +37,23 @@ npm install
 
 ### Database setup
 
-for the
+For the database, MongoDB is used so it is required to install MongoDB Compass in your PC.
+
+1. Download it from https://www.mongodb.com/try/download/compass
+
+Follow the installation instructions for your operating system.
+
+2. Enter My Mongodb string:
+
+Start your MongoDB server using mongod if installed locally. My connection string will be
+
+```bash
+mongodb+srv://BUC:bucstudent123@cluster0.oz53auk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+```
 
 ### Configure Environment Variables
 
-Create a file named `.env` in the `backend/` directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.). Since this one is also provided in the zip file, you can skip it too.
+** Since this one is also provided in the zip file, you can skip it too.** Create a file named `.env` in the `backend/` directory and add your configuration. This is crucial for security (JWT secrets, database connection strings, etc.).
 
 ### Start the Backend Development Server
 
@@ -84,21 +96,37 @@ The system provides secure, scalable, token-based authentication by separating c
 
 This sequence diagram illustrates the complete authentication and token-refresh cycle, including the initial login, API calls, token refresh, and logout.
 
+### Authentication Flow Sequence Diagram (Updated with reCAPTCHA & Google OAuth)
+
 ```mermaid
 sequenceDiagram
     participant U as User
     participant C as Client (Browser/App)
     participant S as Server (Auth API)
+    participant G as Google Auth
 
+    %% Registration with reCAPTCHA
+    U->>C: Enters registration details
+    C->>S: POST /api/auth/register (details + reCAPTCHA token)
+    S-->>C: Success or reCAPTCHA validation error
+
+    %% Login with optional reCAPTCHA
     U->>C: Enters credentials
     C->>S: POST /api/auth/login (credentials)
-    S-->>C: "OTP sent"
-    U->>C: Enters OTP
+    alt Too many failed logins
+        S-->>C: reCAPTCHA required
+        U->>C: Solves reCAPTCHA
+        C->>S: POST /api/auth/login (credentials + reCAPTCHA token)
+    end
+    S-->>C: "OTP sent" or accessToken/refreshToken (if no OTP step)
+
+    U->>C: Enters OTP (if required)
     C->>S: POST /api/auth/verify-otp (OTP)
     S-->>C: accessToken (body) + refreshToken (cookie)
 
     Note over C: Stores accessToken in localStorage\nrefreshToken is managed by browser/cookie
 
+    %% API Requests
     C->>S: API request with Authorization: Bearer accessToken
     S-->>C: Protected resource
 
@@ -113,6 +141,14 @@ sequenceDiagram
     C->>S: API request with new Authorization: Bearer accessToken
     S-->>C: Protected resource
 
+    %% Google OAuth
+    U->>C: Clicks "Login with Google"
+    C->>G: Redirect to Google OAuth
+    G-->>C: OAuth token
+    C->>S: POST /api/auth/google-login (OAuth token)
+    S-->>C: accessToken (body) + refreshToken (cookie)
+
+    %% Logout
     U->>C: Clicks Logout
     C->>S: POST /api/auth/logout
     S-->>C: Cookie cleared, refresh token revoked
