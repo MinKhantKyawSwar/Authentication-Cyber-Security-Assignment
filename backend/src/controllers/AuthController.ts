@@ -44,11 +44,6 @@ export default class AuthController {
     const hash = await argon2.hash(password);
     const user = await UserModel.create({ name, email, passwordHash: hash });
 
-    // generate access token
-    const token = await this.tokenService.createAccessToken(
-      user._id as mongoose.Types.ObjectId
-    );
-
     return res.status(201).json({
       message: "User registered successfully",
       user: {
@@ -56,7 +51,6 @@ export default class AuthController {
         name: user.name || user.email.split("@")[0],
         email: user.email,
       },
-      accessToken: token,
     });
   };
 

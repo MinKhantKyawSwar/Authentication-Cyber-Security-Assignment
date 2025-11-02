@@ -9,7 +9,7 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-  name: { type: String, required: false }, // Make optional for existing users
+  name: { type: String, required: false },
   email: { type: String, required: true, unique: true, lowercase: true },
   passwordHash: { type: String, required: false },
   provider: { type: String, enum: ["local", "google"], default: "local" },
